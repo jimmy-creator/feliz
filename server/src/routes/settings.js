@@ -154,6 +154,39 @@ router.put('/announcements', protect, admin, async (req, res) => {
   }
 });
 
+// "Built For Excellence" cards (home page — left of the video). Each card is
+// { title, subtitle, icon } where `icon` is a key the storefront maps to a
+// lucide icon. Max 5 so the row layout holds.
+router.get('/excellence', async (req, res) => {
+  try {
+    const setting = await Setting.findByPk('excellence');
+    const items = setting?.value ? JSON.parse(setting.value) : [];
+    res.json(items);
+  } catch (error) {
+    res.json([]);
+  }
+});
+
+router.put('/excellence', protect, admin, async (req, res) => {
+  try {
+    const { items } = req.body;
+    if (!Array.isArray(items) || items.length > 5) {
+      return res.status(400).json({ message: 'Provide an array of up to 5 cards' });
+    }
+    const clean = items
+      .map((c) => ({
+        title: String(c?.title || '').trim(),
+        subtitle: String(c?.subtitle || '').trim(),
+        icon: String(c?.icon || '').trim(),
+      }))
+      .filter((c) => c.title);
+    await Setting.upsert({ key: 'excellence', value: JSON.stringify(clean) });
+    res.json(clean);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // B2B bank-transfer details — free-form text included in the quote email when
 // the admin picks the bank-transfer payment method.
 router.get('/b2b-bank-details', protect, admin, async (req, res) => {

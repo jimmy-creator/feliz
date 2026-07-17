@@ -14,15 +14,19 @@ import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { excellenceIcon } from '@/lib/excellenceIcons';
 
 // ── Static content, transcribed from the approved design ──────────────────
 
-const EXCELLENCE = [
-  { icon: ShieldCheck, title: 'Premium Quality', desc: 'Crafted with high grade materials' },
-  { icon: BadgeCheck, title: '10 Year Warranty', desc: 'Long lasting performance you can trust' },
-  { icon: Flame, title: 'Heat & Scratch Resistant', desc: 'Built to withstand everyday use' },
-  { icon: Truck, title: 'Free Shipping', desc: 'Across india on all orders' },
-  { icon: RotateCcw, title: 'Easy Returns', desc: 'Hassle free returns within 7 days' },
+// Fallback for the "Built For Excellence" cards, shown until an admin saves any
+// in Admin → Settings → Excellence Cards. Same shape as the stored setting
+// ({ title, subtitle, icon }) so one render path handles both.
+const EXCELLENCE_FALLBACK = [
+  { icon: 'shield', title: 'Premium Quality', subtitle: 'Crafted with high grade materials' },
+  { icon: 'badge', title: '10 Year Warranty', subtitle: 'Long lasting performance you can trust' },
+  { icon: 'flame', title: 'Heat & Scratch Resistant', subtitle: 'Built to withstand everyday use' },
+  { icon: 'truck', title: 'Free Shipping', subtitle: 'Across india on all orders' },
+  { icon: 'returns', title: 'Easy Returns', subtitle: 'Hassle free returns within 7 days' },
 ];
 
 const HERO_FEATURES = [
@@ -420,7 +424,9 @@ function ProductRail({ eyebrow, title, products, loading, badge = 'heart' }) {
   );
 }
 
-function BuiltForExcellence() {
+function BuiltForExcellence({ cards }) {
+  const items = cards.length ? cards : EXCELLENCE_FALLBACK;
+
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
       {/* The heading sits inside the left column so the video column starts at
@@ -432,16 +438,21 @@ function BuiltForExcellence() {
           <p className="eyebrow">Why Choose Feliz?</p>
           <h2 className="display-head mt-0.5 text-2xl sm:text-[28px]">Built For Excellence</h2>
 
+          {/* Column count is fixed at 5 so fewer cards keep their width and the
+              video stays on the right — they simply leave trailing columns
+              empty rather than stretching to fill the row. */}
           <div className="mt-5 grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {EXCELLENCE.map((item) => {
-              const Icon = item.icon;
+            {items.map((item, i) => {
+              const Icon = excellenceIcon(item.icon);
               return (
-                <div key={item.title} className="glass-card flex flex-col items-center justify-center rounded-2xl px-3 py-6 text-center">
+                <div key={`${item.title}-${i}`} className="glass-card flex flex-col items-center justify-center rounded-2xl px-3 py-6 text-center">
                   <span className="flex size-9 items-center justify-center rounded-full border border-foreground/15">
                     <Icon className="size-4" strokeWidth={1.6} />
                   </span>
                   <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{item.title}</h3>
-                  <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{item.desc}</p>
+                  {item.subtitle && (
+                    <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{item.subtitle}</p>
+                  )}
                 </div>
               );
             })}
@@ -610,6 +621,7 @@ export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [topPicks, setTopPicks] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [excellence, setExcellence] = useState([]);
   const [loading, setLoading] = useState(true);
   // Seeded from cache so the hero doesn't flash the fallback on repeat visits.
   const [banners, setBanners] = useState(() => {
@@ -629,6 +641,10 @@ export default function Home() {
 
     api.get('/categories')
       .then((res) => setCategories(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+
+    api.get('/settings/excellence')
+      .then((res) => setExcellence(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
 
     api.get('/products?featured=true&limit=10')
@@ -655,7 +671,7 @@ export default function Home() {
         loading={loading}
       />
 
-      <BuiltForExcellence />
+      <BuiltForExcellence cards={excellence} />
       <AboutFeliz />
       <SinkMaterials />
       <HappyHomes />

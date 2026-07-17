@@ -171,6 +171,18 @@ const seed = async () => {
       value: JSON.stringify(['New arrivals live now', 'Free shipping all over India', 'Easy 7-day returns']),
     });
 
+    // "Built For Excellence" cards (editable later in Admin → Settings → Theme).
+    await Setting.upsert({
+      key: 'excellence',
+      value: JSON.stringify([
+        { title: 'Premium Quality', subtitle: 'Crafted with high grade materials', icon: 'shield' },
+        { title: '10 Year Warranty', subtitle: 'Long lasting performance you can trust', icon: 'badge' },
+        { title: 'Heat & Scratch Resistant', subtitle: 'Built to withstand everyday use', icon: 'flame' },
+        { title: 'Free Shipping', subtitle: 'Across india on all orders', icon: 'truck' },
+        { title: 'Easy Returns', subtitle: 'Hassle free returns within 7 days', icon: 'returns' },
+      ]),
+    });
+
     console.log(`Database seeded with ${products.length} products and ${categories.length} categories!`);
     console.log('Admin: admin@store.com / admin123');
     console.log('Customer: john@example.com / password123');

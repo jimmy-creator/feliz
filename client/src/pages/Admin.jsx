@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { EXCELLENCE_ICON_OPTIONS } from '@/lib/excellenceIcons';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -684,6 +685,103 @@ function AnnouncementEditor() {
         />
         <button type="button" onClick={add} disabled={!draft.trim() || items.length >= 10} className="btn btn-secondary">
           <HiPlus /> Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const MAX_EXCELLENCE = 5;
+
+// "Built For Excellence" cards — the feature cards left of the video on the home
+// page. Each is { title, subtitle, icon }. Edits are held locally and persisted
+// with the Save button.
+function ExcellenceEditor() {
+  const [cards, setCards] = useState([]);
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    api.get('/settings/excellence')
+      .then((res) => setCards(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+  }, []);
+
+  const update = (i, field, value) => {
+    setCards((prev) => prev.map((c, j) => (j === i ? { ...c, [field]: value } : c)));
+    setDirty(true);
+  };
+
+  const add = () => {
+    if (cards.length >= MAX_EXCELLENCE) return;
+    setCards((prev) => [...prev, { title: '', subtitle: '', icon: 'shield' }]);
+    setDirty(true);
+  };
+
+  const remove = (i) => {
+    setCards((prev) => prev.filter((_, j) => j !== i));
+    setDirty(true);
+  };
+
+  const save = async () => {
+    try {
+      const clean = cards.filter((c) => c.title.trim());
+      const { data } = await api.put('/settings/excellence', { items: clean });
+      setCards(Array.isArray(data) ? data : clean);
+      setDirty(false);
+      toast.success('Excellence cards saved');
+    } catch {
+      toast.error('Failed to save cards');
+    }
+  };
+
+  return (
+    <div style={{ marginTop: '3rem' }}>
+      <h3 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '1rem' }}>
+        Built For Excellence Cards ({cards.length}/{MAX_EXCELLENCE})
+      </h3>
+      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
+        The feature cards shown next to the video in the “Why Choose Feliz?” section. Up to {MAX_EXCELLENCE} cards. Each has a title, a short subtitle, and an icon.
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {cards.map((card, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '11rem 1fr auto', gap: '0.6rem', alignItems: 'start', padding: '0.85rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg-warm)' }}>
+            <div className="form-group" style={{ margin: 0 }}>
+              <Label>Icon</Label>
+              <Select value={card.icon || 'shield'} onValueChange={(v) => update(i, 'icon', v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {EXCELLENCE_ICON_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <Input value={card.title || ''} onChange={(e) => update(i, 'title', e.target.value)} placeholder="Title, e.g. Premium Quality" />
+              <Input value={card.subtitle || ''} onChange={(e) => update(i, 'subtitle', e.target.value)} placeholder="Subtitle, e.g. Crafted with high grade materials" />
+            </div>
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              style={{ padding: '0.4rem 0.6rem', border: '1px solid var(--danger)', borderRadius: 'var(--radius)', background: 'transparent', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.75rem' }}
+              aria-label="Remove card"
+            >
+              <HiTrash />
+            </button>
+          </div>
+        ))}
+        {cards.length === 0 && (
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>No cards yet — the storefront shows its default set until you add some.</p>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <button type="button" onClick={add} disabled={cards.length >= MAX_EXCELLENCE} className="btn btn-secondary">
+          <HiPlus /> Add Card
+        </button>
+        <button type="button" onClick={save} disabled={!dirty} className="btn btn-primary">
+          Save Cards
         </button>
       </div>
     </div>
@@ -4550,6 +4648,9 @@ export default function Admin() {
               description="Add up to 3 banners shown after the Best Sellers section on the home page. Useful for promotions, new arrivals, or seasonal campaigns."
               maxBanners={3}
             />
+
+            {/* Built For Excellence — feature cards left of the home page video */}
+            <ExcellenceEditor />
 
             {/* Category Cards — large coloured tiles on the home page */}
             <CategoryCardsEditor />
