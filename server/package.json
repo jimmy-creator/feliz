@@ -7,6 +7,7 @@
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "seed": "node src/seed.js",
+    "reseed:catalogue": "node src/reseedCatalogue.js",
     "create:admin": "node src/scripts/createAdmin.js",
     "test:email": "node src/scripts/testEmail.js",
     "export:shiprocket": "node src/scripts/exportShiprocketInventory.js",

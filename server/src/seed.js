@@ -1,260 +1,145 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { fileURLToPath } from 'url';
 import sequelize from './config/database.js';
 import { User, Product, Category, Setting } from './models/index.js';
 
-const products = [
-  // Electronics
+// Placeholder catalogue for the FELIZ sink store. Names/prices/taglines follow
+// the approved design; real photography is added later via the admin.
+// `description` is the short tagline shown on the home page range cards.
+export const categories = [
+  { name: 'Quartz Sinks', description: 'Premium quartz finish', sortOrder: 1 },
+  { name: 'Single Bowl Sinks', description: 'Compact. Elegant. Practical.', sortOrder: 2 },
+  { name: 'Double Bowl Sinks', description: 'More space for more convenience', sortOrder: 3 },
+  { name: 'Colored Sinks', description: 'Style that adds a splash of color', sortOrder: 4 },
+  { name: 'Undermount Sinks', description: 'Sleek. Seamless. Sophisticated.', sortOrder: 5 },
+  { name: 'Accessories', description: 'Complete your sink experience', sortOrder: 6 },
+];
+
+export const products = [
+  // Quartz Sinks
   {
-    name: 'Wireless Bluetooth Headphones',
-    slug: 'wireless-bluetooth-headphones',
-    description: 'Premium noise-cancelling wireless headphones with 30-hour battery life, deep bass, and crystal-clear audio. Features active noise cancellation, comfortable memory foam ear cushions, and foldable design for easy travel.',
-    price: 79.99, comparePrice: 129.99,
-    category: 'Electronics', brand: 'SoundMax', stock: 50,
-    images: [], featured: true, ratings: 4.5, numReviews: 128,
+    name: 'FELIZ Marble Quartz Sink',
+    slug: 'feliz-marble-quartz-sink',
+    description: 'Single bowl quartz sink with a natural marble finish. Made from 80% natural quartz for exceptional strength, with a scratch, stain and heat resistant surface that keeps its colour for years.',
+    price: 22999, comparePrice: 27999,
+    category: 'Quartz Sinks', brand: 'FELIZ', stock: 24,
+    images: [], featured: true, ratings: 4.5, numReviews: 46,
   },
   {
-    name: 'Smart Watch Pro',
-    slug: 'smart-watch-pro',
-    description: 'Advanced fitness tracker with heart rate monitor, GPS, sleep tracking, and 7-day battery. Water resistant up to 50 meters. Features blood oxygen monitoring and stress tracking.',
-    price: 199.99, comparePrice: 249.99,
-    category: 'Electronics', brand: 'TechFit', stock: 30,
-    images: [], featured: true, ratings: 4.3, numReviews: 89,
+    name: 'FELIZ Fusion Quartz Sink',
+    slug: 'feliz-fusion-quartz-sink',
+    description: 'Single bowl quartz sink with a fine-grain fusion texture. Non-porous surface resists bacteria and everyday staining, and the sound-dampened base keeps washing up quiet.',
+    price: 19999, comparePrice: 24999,
+    category: 'Quartz Sinks', brand: 'FELIZ', stock: 30,
+    images: [], featured: true, ratings: 4.4, numReviews: 32,
   },
   {
-    name: 'Wireless Charging Pad',
-    slug: 'wireless-charging-pad',
-    description: 'Fast wireless charger compatible with all Qi-enabled devices. Sleek aluminum design with LED indicator and intelligent overheat protection. Charges through cases up to 8mm thick.',
-    price: 19.99, comparePrice: 29.99,
-    category: 'Electronics', brand: 'ChargeTech', stock: 120,
-    images: [], featured: false, ratings: 4.1, numReviews: 234,
-  },
-  {
-    name: 'Portable Bluetooth Speaker',
-    slug: 'portable-bluetooth-speaker',
-    description: 'Compact waterproof speaker with 360-degree immersive sound. 12-hour playtime, built-in microphone for hands-free calls. IPX7 rated for pool and beach use.',
-    price: 59.99, comparePrice: 79.99,
-    category: 'Electronics', brand: 'SoundMax', stock: 80,
-    images: [], featured: true, ratings: 4.6, numReviews: 312,
-  },
-  {
-    name: 'USB-C Hub Adapter',
-    slug: 'usb-c-hub-adapter',
-    description: '7-in-1 USB-C hub with HDMI 4K output, 3x USB 3.0, SD/TF card reader, and 100W Power Delivery pass-through. Aluminum alloy body with advanced heat dissipation.',
-    price: 34.99, comparePrice: 49.99,
-    category: 'Electronics', brand: 'TechFit', stock: 90,
-    images: [], featured: false, ratings: 4.4, numReviews: 156,
-  },
-  {
-    name: 'Noise Cancelling Earbuds',
-    slug: 'noise-cancelling-earbuds',
-    description: 'True wireless earbuds with hybrid active noise cancellation. Hi-Res audio certified, 8-hour battery life with 32 hours total with charging case. Touch controls and voice assistant support.',
-    price: 89.99, comparePrice: 119.99,
-    category: 'Electronics', brand: 'SoundMax', stock: 65,
-    images: [], featured: true, ratings: 4.7, numReviews: 445,
-  },
-  {
-    name: 'Mechanical Keyboard',
-    slug: 'mechanical-keyboard',
-    description: 'Compact 75% mechanical keyboard with hot-swappable switches, RGB backlighting, and wireless Bluetooth connectivity. PBT keycaps with a premium typing feel.',
-    price: 69.99, comparePrice: 99.99,
-    category: 'Electronics', brand: 'ChargeTech', stock: 40,
-    images: [], featured: false, ratings: 4.8, numReviews: 267,
+    name: 'FELIZ Granite Composite Sink',
+    slug: 'feliz-granite-composite-sink',
+    description: 'Naturally tough granite composite sink built to shrug off heat and impact. Deep bowl with a rear-set drain so pans sit flat and water clears fast.',
+    price: 21499, comparePrice: 25999,
+    category: 'Quartz Sinks', brand: 'FELIZ', stock: 18,
+    images: [], featured: false, ratings: 4.6, numReviews: 51,
   },
 
-  // Clothing
+  // Single Bowl Sinks
   {
-    name: 'Organic Cotton T-Shirt',
-    slug: 'organic-cotton-tshirt',
-    description: '100% organic cotton, sustainably sourced and GOTS certified. Comfortable relaxed fit with a modern design. Pre-washed for extra softness. Available in multiple colors.',
-    price: 29.99, comparePrice: 39.99,
-    category: 'Clothing', brand: 'EcoWear', stock: 100,
-    images: [], featured: true, ratings: 4.2, numReviews: 78,
+    name: 'FELIZ Imperial Quartz Sink',
+    slug: 'feliz-imperial-quartz-sink',
+    description: 'Generous single bowl sink for busy kitchens. Fits full-size trays and stockpots, with a gently sloped base for effortless drainage and cleaning.',
+    price: 26999, comparePrice: 31999,
+    category: 'Single Bowl Sinks', brand: 'FELIZ', stock: 15,
+    images: [], featured: true, ratings: 4.7, numReviews: 36,
   },
   {
-    name: 'Denim Jacket Classic',
-    slug: 'denim-jacket-classic',
-    description: 'Timeless denim jacket with a modern slim fit. Made from premium 12oz cotton denim with copper button detailing, reinforced stitching, and adjustable waist tabs.',
-    price: 69.99, comparePrice: 89.99,
-    category: 'Clothing', brand: 'DenimCo', stock: 35,
-    images: [], featured: false, ratings: 4.4, numReviews: 112,
-  },
-  {
-    name: 'Merino Wool Sweater',
-    slug: 'merino-wool-sweater',
-    description: 'Luxuriously soft merino wool crewneck sweater. Naturally temperature-regulating, breathable, and odor-resistant. Perfect for layering in any season.',
-    price: 89.99, comparePrice: 119.99,
-    category: 'Clothing', brand: 'EcoWear', stock: 45,
-    images: [], featured: true, ratings: 4.6, numReviews: 93,
-  },
-  {
-    name: 'Linen Blend Shirt',
-    slug: 'linen-blend-shirt',
-    description: 'Relaxed-fit button-down in a premium linen-cotton blend. Breathable and lightweight, perfect for warm weather. Mother-of-pearl buttons and a curved hem.',
-    price: 49.99, comparePrice: 64.99,
-    category: 'Clothing', brand: 'EcoWear', stock: 60,
-    images: [], featured: false, ratings: 4.3, numReviews: 67,
-  },
-  {
-    name: 'Chino Pants Slim Fit',
-    slug: 'chino-pants-slim-fit',
-    description: 'Tailored slim-fit chinos in stretch cotton twill. Features a comfortable mid-rise waist, hidden security pocket, and wrinkle-resistant fabric for all-day wear.',
-    price: 54.99, comparePrice: 74.99,
-    category: 'Clothing', brand: 'DenimCo', stock: 55,
-    images: [], featured: false, ratings: 4.1, numReviews: 145,
+    name: 'FELIZ Crystal Grey Sink',
+    slug: 'feliz-crystal-grey-sink',
+    description: 'Compact single bowl sink in a soft crystal grey. Ideal for smaller kitchens and utility spaces without giving up depth or durability.',
+    price: 18999, comparePrice: 22999,
+    category: 'Single Bowl Sinks', brand: 'FELIZ', stock: 40,
+    images: [], featured: true, ratings: 4.3, numReviews: 30,
   },
 
-  // Footwear
+  // Double Bowl Sinks
   {
-    name: 'Running Shoes Ultra',
-    slug: 'running-shoes-ultra',
-    description: 'Lightweight running shoes with responsive ZoomFoam cushioning and breathable engineered mesh upper. Ideal for daily training and long-distance races. Weighs only 245g.',
-    price: 119.99, comparePrice: 159.99,
-    category: 'Footwear', brand: 'SpeedRun', stock: 45,
-    images: [], featured: true, ratings: 4.5, numReviews: 203,
+    name: 'FELIZ Matrix Quartz Sink',
+    slug: 'feliz-matrix-quartz-sink',
+    description: 'Double bowl quartz sink that keeps washing and rinsing separate. Equal-depth bowls with a slim central divider to maximise usable space.',
+    price: 24999, comparePrice: 29999,
+    category: 'Double Bowl Sinks', brand: 'FELIZ', stock: 20,
+    images: [], featured: true, ratings: 4.5, numReviews: 28,
   },
   {
-    name: 'Leather Chelsea Boots',
-    slug: 'leather-chelsea-boots',
-    description: 'Handcrafted full-grain leather Chelsea boots with Goodyear welt construction. Features elastic side panels, pull tab, and natural rubber sole. Built to last years.',
-    price: 149.99, comparePrice: 199.99,
-    category: 'Footwear', brand: 'SpeedRun', stock: 25,
-    images: [], featured: true, ratings: 4.7, numReviews: 178,
+    name: 'FELIZ Nano Black Sink',
+    slug: 'feliz-nano-black-sink',
+    description: 'Double bowl sink with a nano-coated black finish that repels water spots and fingerprints. A modern centrepiece that stays looking new with minimal effort.',
+    price: 26999, comparePrice: 32999,
+    category: 'Double Bowl Sinks', brand: 'FELIZ', stock: 12,
+    images: [], featured: true, ratings: 4.8, numReviews: 20,
+  },
+
+  // Colored Sinks
+  {
+    name: 'FELIZ Sandstone Colored Sink',
+    slug: 'feliz-sandstone-colored-sink',
+    description: 'Warm sandstone finish that pairs with wood and stone worktops. Colour runs right through the material, so scratches never show a different shade underneath.',
+    price: 23499, comparePrice: 28999,
+    category: 'Colored Sinks', brand: 'FELIZ', stock: 22,
+    images: [], featured: false, ratings: 4.4, numReviews: 19,
   },
   {
-    name: 'Canvas Sneakers',
-    slug: 'canvas-sneakers',
-    description: 'Classic low-top canvas sneakers with vulcanized rubber sole. Organic cotton upper, cushioned insole, and reinforced toe cap. A timeless everyday essential.',
-    price: 44.99, comparePrice: 59.99,
-    category: 'Footwear', brand: 'SpeedRun', stock: 80,
-    images: [], featured: false, ratings: 4.2, numReviews: 324,
+    name: 'FELIZ Ivory Colored Sink',
+    slug: 'feliz-ivory-colored-sink',
+    description: 'Soft ivory sink that brightens darker kitchens. UV-stable pigment keeps the tone even over years of daily use.',
+    price: 20999, comparePrice: 25499,
+    category: 'Colored Sinks', brand: 'FELIZ', stock: 26,
+    images: [], featured: false, ratings: 4.2, numReviews: 24,
+  },
+
+  // Undermount Sinks
+  {
+    name: 'FELIZ Onyx Undermount Sink',
+    slug: 'feliz-onyx-undermount-sink',
+    description: 'Seamless undermount fit with no rim to trap crumbs — wipe straight from the worktop into the bowl. Deep onyx finish with a matte touch.',
+    price: 27999, comparePrice: 33999,
+    category: 'Undermount Sinks', brand: 'FELIZ', stock: 14,
+    images: [], featured: true, ratings: 4.7, numReviews: 41,
+  },
+  {
+    name: 'FELIZ Slate Undermount Sink',
+    slug: 'feliz-slate-undermount-sink',
+    description: 'Understated slate undermount sink with a wide flat base. Sits flush beneath quartz or granite worktops for a built-in look.',
+    price: 25499, comparePrice: 30999,
+    category: 'Undermount Sinks', brand: 'FELIZ', stock: 17,
+    images: [], featured: false, ratings: 4.5, numReviews: 33,
   },
 
   // Accessories
   {
-    name: 'Stainless Steel Water Bottle',
-    slug: 'stainless-steel-water-bottle',
-    description: 'Double-walled vacuum insulated bottle keeps drinks cold for 24 hours or hot for 12. BPA-free, eco-friendly, and leak-proof. 750ml capacity in a sleek matte finish.',
-    price: 24.99, comparePrice: 34.99,
-    category: 'Accessories', brand: 'HydroLife', stock: 200,
-    images: [], featured: false, ratings: 4.3, numReviews: 412,
+    name: 'FELIZ Sink Drain Kit',
+    slug: 'feliz-sink-drain-kit',
+    description: 'Complete drain and waste kit with a stainless basket strainer and anti-odour trap. Fits all FELIZ single and double bowl sinks.',
+    price: 2499, comparePrice: 3499,
+    category: 'Accessories', brand: 'FELIZ', stock: 120,
+    images: [], featured: false, ratings: 4.3, numReviews: 87,
   },
   {
-    name: 'Laptop Backpack',
-    slug: 'laptop-backpack',
-    description: 'Durable laptop backpack with USB charging port, anti-theft hidden zipper design, and water-resistant 600D polyester. Fits up to 15.6" laptops with dedicated padded compartment.',
-    price: 49.99, comparePrice: 69.99,
-    category: 'Accessories', brand: 'UrbanPack', stock: 75,
-    images: [], featured: true, ratings: 4.4, numReviews: 189,
+    name: 'FELIZ Roll-Up Drying Rack',
+    slug: 'feliz-roll-up-drying-rack',
+    description: 'Silicone-wrapped stainless rack that rolls out over the bowl for drying and rolls away when you are done. Heat resistant enough to rest hot pans on.',
+    price: 1999, comparePrice: 2999,
+    category: 'Accessories', brand: 'FELIZ', stock: 95,
+    images: [], featured: true, ratings: 4.6, numReviews: 64,
   },
   {
-    name: 'Leather Wallet RFID',
-    slug: 'leather-wallet-rfid',
-    description: 'Slim bifold wallet in genuine Italian leather with RFID-blocking technology. Features 8 card slots, 2 bill compartments, and ID window. Gift boxed.',
-    price: 39.99, comparePrice: 54.99,
-    category: 'Accessories', brand: 'UrbanPack', stock: 95,
-    images: [], featured: false, ratings: 4.6, numReviews: 256,
-  },
-  {
-    name: 'Polarized Sunglasses',
-    slug: 'polarized-sunglasses',
-    description: 'Premium polarized sunglasses with UV400 protection. Lightweight acetate frame with anti-scratch coating. Includes hard case and microfiber cleaning cloth.',
-    price: 59.99, comparePrice: 79.99,
-    category: 'Accessories', brand: 'UrbanPack', stock: 65,
-    images: [], featured: true, ratings: 4.5, numReviews: 134,
-  },
-  {
-    name: 'Minimalist Watch',
-    slug: 'minimalist-watch',
-    description: 'Clean dial analog watch with Japanese quartz movement. 40mm stainless steel case, sapphire crystal glass, and interchangeable genuine leather strap. 5ATM water resistant.',
-    price: 79.99, comparePrice: 109.99,
-    category: 'Accessories', brand: 'TechFit', stock: 30,
-    images: [], featured: true, ratings: 4.8, numReviews: 87,
-  },
-
-  // Sports
-  {
-    name: 'Yoga Mat Premium',
-    slug: 'yoga-mat-premium',
-    description: 'Extra thick 6mm non-slip yoga mat with laser-etched alignment lines. Made from eco-friendly TPE material, free of PVC, latex, and toxic chemicals. Includes carrying strap.',
-    price: 39.99, comparePrice: 59.99,
-    category: 'Sports', brand: 'ZenFlex', stock: 60,
-    images: [], featured: false, ratings: 4.5, numReviews: 178,
-  },
-  {
-    name: 'Resistance Bands Set',
-    slug: 'resistance-bands-set',
-    description: 'Set of 5 natural latex resistance bands (10-50 lbs) with door anchor, ankle straps, and carrying bag. Perfect for home workouts, physical therapy, and stretching.',
-    price: 24.99, comparePrice: 39.99,
-    category: 'Sports', brand: 'ZenFlex', stock: 150,
-    images: [], featured: false, ratings: 4.3, numReviews: 289,
-  },
-  {
-    name: 'Foam Roller Pro',
-    slug: 'foam-roller-pro',
-    description: 'High-density EVA foam roller with textured surface for deep tissue massage. 18-inch length ideal for back, legs, and full-body recovery. Includes exercise guide.',
-    price: 29.99, comparePrice: 44.99,
-    category: 'Sports', brand: 'ZenFlex', stock: 70,
-    images: [], featured: false, ratings: 4.4, numReviews: 198,
-  },
-  {
-    name: 'Jump Rope Speed',
-    slug: 'jump-rope-speed',
-    description: 'Adjustable speed jump rope with ball bearing handles for smooth rotation. Tangle-free steel cable with PVC coating. Perfect for cardio, crossfit, and boxing training.',
-    price: 14.99, comparePrice: 24.99,
-    category: 'Sports', brand: 'ZenFlex', stock: 120,
-    images: [], featured: false, ratings: 4.2, numReviews: 167,
-  },
-
-  // Home
-  {
-    name: 'Ceramic Coffee Mug Set',
-    slug: 'ceramic-coffee-mug-set',
-    description: 'Set of 4 handcrafted ceramic mugs in earthy tones. Microwave and dishwasher safe. 12oz capacity with comfortable handle. Reactive glaze finish makes each piece unique.',
-    price: 34.99, comparePrice: 44.99,
-    category: 'Home', brand: 'CraftHome', stock: 40,
-    images: [], featured: false, ratings: 4.6, numReviews: 145,
-  },
-  {
-    name: 'LED Desk Lamp',
-    slug: 'led-desk-lamp',
-    description: 'Adjustable LED desk lamp with 5 brightness levels and 3 color temperatures. Built-in USB charging port, 45-minute auto-off timer, and touch-sensitive controls.',
-    price: 44.99, comparePrice: 59.99,
-    category: 'Home', brand: 'BrightWork', stock: 55,
-    images: [], featured: true, ratings: 4.5, numReviews: 112,
-  },
-  {
-    name: 'Scented Candle Collection',
-    slug: 'scented-candle-collection',
-    description: 'Set of 3 hand-poured soy wax candles in artisan glass jars. Scents include Vanilla Bourbon, Cedar & Sage, and Ocean Breeze. 45-hour burn time each.',
-    price: 42.99, comparePrice: 54.99,
-    category: 'Home', brand: 'CraftHome', stock: 85,
-    images: [], featured: false, ratings: 4.7, numReviews: 203,
-  },
-  {
-    name: 'Throw Blanket Knit',
-    slug: 'throw-blanket-knit',
-    description: 'Chunky knit throw blanket in organic cotton. Generous 50"x60" size perfect for the couch or bed. Machine washable with a buttery-soft hand feel.',
-    price: 59.99, comparePrice: 79.99,
-    category: 'Home', brand: 'CraftHome', stock: 35,
-    images: [], featured: true, ratings: 4.8, numReviews: 97,
-  },
-  {
-    name: 'Plant Pot Set Ceramic',
-    slug: 'plant-pot-set-ceramic',
-    description: 'Set of 3 modern ceramic planters with bamboo saucers. Drainage holes for healthy plants. Matte finish in white, sage, and terracotta. Sizes: 4", 5", and 6".',
-    price: 32.99, comparePrice: 44.99,
-    category: 'Home', brand: 'CraftHome', stock: 50,
-    images: [], featured: false, ratings: 4.4, numReviews: 156,
-  },
-  {
-    name: 'Wall Clock Minimal',
-    slug: 'wall-clock-minimal',
-    description: 'Scandinavian-inspired 12-inch wall clock with silent sweep movement. Solid wood frame in natural oak finish with clean sans-serif numerals. Runs on 1 AA battery.',
-    price: 38.99, comparePrice: 49.99,
-    category: 'Home', brand: 'BrightWork', stock: 42,
-    images: [], featured: false, ratings: 4.3, numReviews: 88,
+    name: 'FELIZ Chopping Board',
+    slug: 'feliz-chopping-board',
+    description: 'Solid bamboo board sized to slide across the sink, turning the bowl into extra prep space. Reversible with a juice groove on one face.',
+    price: 2999, comparePrice: 3999,
+    category: 'Accessories', brand: 'FELIZ', stock: 70,
+    images: [], featured: false, ratings: 4.5, numReviews: 52,
   },
 ];
 
@@ -278,18 +163,15 @@ const seed = async () => {
     });
 
     await Product.bulkCreate(products);
-
-    // Categories — derived from the product set so the storefront nav/filters populate.
-    const categoryNames = [...new Set(products.map((p) => p.category).filter(Boolean))];
-    await Category.bulkCreate(categoryNames.map((name, i) => ({ name, sortOrder: i + 1, active: true })));
+    await Category.bulkCreate(categories.map((c) => ({ ...c, active: true })));
 
     // Announcement bar messages (editable later in Admin → Settings).
     await Setting.upsert({
       key: 'announcements',
-      value: JSON.stringify(['New arrivals live now', 'Free delivery across the UAE', 'Easy 14-day returns']),
+      value: JSON.stringify(['New arrivals live now', 'Free shipping all over India', 'Easy 7-day returns']),
     });
 
-    console.log(`Database seeded with ${products.length} products and ${categoryNames.length} categories!`);
+    console.log(`Database seeded with ${products.length} products and ${categories.length} categories!`);
     console.log('Admin: admin@store.com / admin123');
     console.log('Customer: john@example.com / password123');
     process.exit(0);
@@ -299,4 +181,9 @@ const seed = async () => {
   }
 };
 
-seed();
+// Only self-run when executed directly (`npm run seed`). Importing this file
+// elsewhere just exposes the catalogue above — it must never drop tables as a
+// side effect of an import.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  seed();
+}

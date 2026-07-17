@@ -32,7 +32,7 @@ router.get('/all', protect, admin, async (req, res) => {
 // Create category
 router.post('/', protect, admin, async (req, res) => {
   try {
-    const { name, nameAr, image, sortOrder } = req.body;
+    const { name, nameAr, description, image, sortOrder } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
 
     const existing = await Category.findOne({ where: { name } });
@@ -41,6 +41,7 @@ router.post('/', protect, admin, async (req, res) => {
     const category = await Category.create({
       name,
       nameAr: nameAr || null,
+      description: description || null,
       image: image || null,
       sortOrder: sortOrder || 0,
     });

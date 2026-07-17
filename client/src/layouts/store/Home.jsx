@@ -8,6 +8,7 @@ import {
 import api from '../../api/axios';
 import SEO from '../../components/SEO';
 import ProductImage from '../../components/ProductImage';
+import { localizedName } from '../../utils/i18nHelpers';
 import { CurrencySymbol, formatPrice } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -15,17 +16,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 // ── Static content, transcribed from the approved design ──────────────────
-
-const CATEGORY_PILLS = ['Quartz Sinks', 'Single Bowl', 'Double Bowl', 'Colored Sinks', 'Accessories'];
-
-const RANGE_CARDS = [
-  { title: 'Quartz Sinks', desc: 'Premium quartz finish' },
-  { title: 'Single Bowl Sinks', desc: 'Compact. Elegant. Practical.' },
-  { title: 'Double Bowl Sinks', desc: 'More space for more convenience' },
-  { title: 'Colored Sinks', desc: 'Style that adds a splash of color' },
-  { title: 'Undermount Sinks', desc: 'Sleek. Seamless. Sophisticated.' },
-  { title: 'Accessories', desc: 'Complete your sink experience' },
-];
 
 const EXCELLENCE = [
   { icon: ShieldCheck, title: 'Premium Quality', desc: 'Crafted with high grade materials' },
@@ -288,27 +278,11 @@ function Hero({ banners }) {
   );
 }
 
-function CategoryPills() {
-  return (
-    <section className="mx-auto mt-5 max-w-[1330px] px-3 lg:px-6">
-      <div className="glass flex items-center justify-center gap-3 overflow-x-auto rounded-[22px] px-6 py-4 [scrollbar-width:none] sm:gap-6 lg:gap-10">
-        {CATEGORY_PILLS.map((label, i) => (
-          <div key={label} className="flex shrink-0 items-center gap-3 sm:gap-6 lg:gap-10">
-            {i > 0 && <span className="text-lg font-light text-[color:var(--copper)]">/</span>}
-            <Link
-              to={`/products?category=${encodeURIComponent(label)}`}
-              className="display-head whitespace-nowrap text-base transition-colors hover:text-[color:var(--copper)] sm:text-lg"
-            >
-              {label}
-            </Link>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
+/* Driven by the categories admin: name, description and image all come from
+   Admin → Categories. */
+function ExploreRange({ categories }) {
+  if (!categories.length) return null;
 
-function ExploreRange() {
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
       <div className="mb-5 text-center">
@@ -319,22 +293,27 @@ function ExploreRange() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {RANGE_CARDS.map(({ title, desc }) => (
-          <Link
-            key={title}
-            to={`/products?category=${encodeURIComponent(title)}`}
-            className="glass-card group grid grid-cols-[1fr_1.1fr] items-center gap-3 overflow-hidden rounded-2xl p-5 transition-shadow hover:shadow-lg"
-          >
-            <div className="min-w-0">
-              <h3 className="text-[13px] font-bold uppercase tracking-wide text-foreground">{title}</h3>
-              <p className="mt-2 text-[11px] leading-snug text-muted-foreground">{desc}</p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-foreground transition-colors group-hover:text-[color:var(--copper)]">
-                Shop Now <ArrowRight className="size-3" />
-              </span>
-            </div>
-            <ImageSlot alt={title} className="aspect-[4/3] rounded-xl" />
-          </Link>
-        ))}
+        {categories.map((category) => {
+          const label = localizedName(category);
+          return (
+            <Link
+              key={category.id || category.name}
+              to={`/products?category=${encodeURIComponent(category.name)}`}
+              className="glass-card group grid grid-cols-[1fr_1.1fr] items-center gap-3 overflow-hidden rounded-2xl p-5 transition-shadow hover:shadow-lg"
+            >
+              <div className="min-w-0">
+                <h3 className="text-[13px] font-bold uppercase tracking-wide text-foreground">{label}</h3>
+                {category.description && (
+                  <p className="mt-2 text-[11px] leading-snug text-muted-foreground">{category.description}</p>
+                )}
+                <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-foreground transition-colors group-hover:text-[color:var(--copper)]">
+                  Shop Now <ArrowRight className="size-3" />
+                </span>
+              </div>
+              <ImageSlot src={category.image} alt={label} className="aspect-[4/3] rounded-xl" />
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
@@ -624,6 +603,7 @@ export default function Home() {
   const { t } = useTranslation();
   const [featured, setFeatured] = useState([]);
   const [topPicks, setTopPicks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   // Seeded from cache so the hero doesn't flash the fallback on repeat visits.
   const [banners, setBanners] = useState(() => {
@@ -641,6 +621,10 @@ export default function Home() {
       })
       .catch(() => {});
 
+    api.get('/categories')
+      .then((res) => setCategories(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+
     api.get('/products?featured=true&limit=10')
       .then((res) => setFeatured(res.data.products || []))
       .catch(() => {})
@@ -656,8 +640,7 @@ export default function Home() {
       <SEO title={t('home.seoTitle')} description={t('home.seoDescription')} />
 
       <Hero banners={banners} />
-      <CategoryPills />
-      <ExploreRange />
+      <ExploreRange categories={categories} />
 
       <ProductRail
         eyebrow="Our Best Selling Sinks"

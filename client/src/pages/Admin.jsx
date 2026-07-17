@@ -3731,7 +3731,7 @@ export default function Admin() {
 
         {tab === 'categories' && (
           <div>
-            <Button className="mb-4" onClick={() => setCatForm({ name: '', nameAr: '', image: '', sortOrder: 0, active: true, _editing: false })}>
+            <Button className="mb-4" onClick={() => setCatForm({ name: '', nameAr: '', description: '', image: '', sortOrder: 0, active: true, _editing: false })}>
               <Plus className="size-4" /> Add Category
             </Button>
 
@@ -3742,7 +3742,7 @@ export default function Admin() {
                   <form className="flex flex-col gap-4" onSubmit={async (e) => {
                     e.preventDefault();
                     try {
-                      const payload = { name: catForm.name, nameAr: catForm.nameAr || null, image: catForm.image, sortOrder: catForm.sortOrder, active: catForm.active };
+                      const payload = { name: catForm.name, nameAr: catForm.nameAr || null, description: catForm.description || null, image: catForm.image, sortOrder: catForm.sortOrder, active: catForm.active };
                       if (catForm._editing) { await api.put(`/categories/${catForm._id}`, payload); toast.success('Category updated'); }
                       else { await api.post('/categories', payload); toast.success('Category created'); }
                       setCatForm(null);
@@ -3756,6 +3756,15 @@ export default function Admin() {
                     <div className="flex flex-col gap-2">
                       <Label>Arabic Name (optional)</Label>
                       <Input dir="rtl" placeholder="الاسم بالعربية" value={catForm.nameAr || ''} onChange={(e) => setCatForm({ ...catForm, nameAr: e.target.value })} />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label>Description (optional)</Label>
+                      <Textarea
+                        rows={2}
+                        placeholder="Short tagline shown under the name on the home page, e.g. “Premium quartz finish”"
+                        value={catForm.description || ''}
+                        onChange={(e) => setCatForm({ ...catForm, description: e.target.value })}
+                      />
                     </div>
                     <div className="flex flex-col gap-2">
                       <Label>Category Image</Label>

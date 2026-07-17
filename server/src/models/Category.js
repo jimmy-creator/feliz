@@ -17,6 +17,11 @@ const Category = sequelize.define('Category', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  // Short tagline shown under the category name on the storefront.
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   image: {
     type: DataTypes.STRING,
     allowNull: true,
