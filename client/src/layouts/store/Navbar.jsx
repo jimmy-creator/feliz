@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu, Search, User, ShoppingCart, Home, LayoutGrid, Heart,
-  ShieldCheck, BadgeCheck, Truck, PackageSearch, Headset, Phone, X,
+  ShieldCheck, BadgeCheck, Truck, PackageSearch, Headset, X,
+  RotateCcw, CreditCard, Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -22,14 +23,24 @@ import {
 import { cn } from '@/lib/utils';
 
 const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'FELIZ';
-const SUPPORT_PHONE = '+91 9688 94100344';
 
-// Top utility bar — exact copy from the design.
-const UTILITY_LEFT = [
-  { icon: ShieldCheck, label: 'Premium Quality' },
-  { icon: BadgeCheck, label: '10 Year Warranty' },
-  { icon: Truck, label: 'Free Shipping All Over India' },
+// The utility bar's left side is driven by Admin → Settings → Announcement bar,
+// which stores plain strings. Pick an icon by keyword so the design's icon+text
+// pairing survives whatever the admin types (same approach the category icons
+// use elsewhere). Falls back to a generic mark.
+const ANNOUNCEMENT_ICONS = [
+  [/warrant|guarantee/i, BadgeCheck],
+  [/ship|deliver|freight/i, Truck],
+  [/return|refund|exchange/i, RotateCcw],
+  [/support|help|service|assist/i, Headset],
+  [/secure|payment|pay|safe/i, CreditCard],
+  [/quality|premium|grade|durab/i, ShieldCheck],
 ];
+
+function announcementIcon(text = '') {
+  for (const [re, Icon] of ANNOUNCEMENT_ICONS) if (re.test(text)) return Icon;
+  return Sparkles;
+}
 
 // Main nav — exact labels from the design.
 const NAV_LINKS = [
@@ -68,6 +79,11 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
+  // Seeded from cache so the bar doesn't pop in on repeat visits.
+  const [announcements, setAnnouncements] = useState(() => {
+    const cached = localStorage.getItem('cached-announcements');
+    return cached ? JSON.parse(cached) : [];
+  });
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -83,6 +99,14 @@ export default function Navbar() {
 
   useEffect(() => {
     api.get('/categories').then((res) => setCategories(Array.isArray(res.data) ? res.data : [])).catch(() => {});
+
+    api.get('/settings/announcements')
+      .then((res) => {
+        if (!Array.isArray(res.data)) return;
+        setAnnouncements(res.data);
+        localStorage.setItem('cached-announcements', JSON.stringify(res.data));
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -229,19 +253,21 @@ export default function Navbar() {
       <header className="sticky top-0 z-40 w-full">
         {/* ── Utility bar ─────────────────────────────────────────────── */}
         <div className="hidden lg:block">
-          <div className="mx-auto flex max-w-[1330px] items-center justify-between px-6 py-2.5 text-[11px] text-foreground/70">
-            <div className="flex items-center gap-7">
-              {UTILITY_LEFT.map((item) => {
-                const Icon = item.icon;
+          <div className="mx-auto flex max-w-[1330px] items-center justify-between gap-6 px-6 py-2.5 text-[11px] text-foreground/70">
+            {/* Left: admin announcements. Overflow is clipped rather than
+                wrapping, so a long list can't push the links off the bar. */}
+            <div className="flex min-w-0 flex-1 items-center gap-7 overflow-hidden">
+              {announcements.map((text) => {
+                const Icon = announcementIcon(text);
                 return (
-                  <span key={item.label} className="flex items-center gap-1.5">
+                  <span key={text} className="flex shrink-0 items-center gap-1.5">
                     <Icon className="size-[13px]" strokeWidth={1.8} />
-                    {item.label}
+                    {text}
                   </span>
                 );
               })}
             </div>
-            <div className="flex items-center gap-7">
+            <div className="flex shrink-0 items-center gap-7">
               <LanguageSwitcher compact />
               <Link to="/orders" className="flex items-center gap-1.5 transition-colors hover:text-foreground">
                 <PackageSearch className="size-[13px]" strokeWidth={1.8} /> Track Order
@@ -249,12 +275,6 @@ export default function Navbar() {
               <Link to="/contact" className="flex items-center gap-1.5 transition-colors hover:text-foreground">
                 <Headset className="size-[13px]" strokeWidth={1.8} /> Support
               </Link>
-              <a
-                href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}
-                className="flex items-center gap-1.5 font-semibold text-foreground"
-              >
-                <Phone className="size-[13px]" strokeWidth={1.8} /> {SUPPORT_PHONE}
-              </a>
             </div>
           </div>
         </div>
