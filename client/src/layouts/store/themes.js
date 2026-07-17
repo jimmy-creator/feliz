@@ -1,9 +1,45 @@
 import sharedThemes from '../../themes/shared';
 
-export const defaultTheme = 'elegantBayt';
+export const defaultTheme = 'feliz';
 
 const store4Themes = {
   ...sharedThemes,
+
+  // Feliz — glassmorphism. Colours sampled directly from the approved design.
+  feliz: {
+    name: 'Feliz',
+    description: 'Glassmorphism — red accent on frosted blue-grey',
+    vars: {
+      '--font-display': "'Oswald', 'Arial Narrow', sans-serif",
+      '--font-body':    "'Poppins', system-ui, sans-serif",
+      '--copper':       '#ef3229',
+      '--copper-light': '#ff5247',
+      '--copper-dark':  '#c81e16',
+      '--gold':         '#ef3229',
+      /* Ice/water neutral — cool and lightly aqua, deliberately not blue. */
+      '--bg':           '#e3eaea',
+      '--bg-warm':      '#d8e3e3',
+      '--bg-card':      'rgba(255, 255, 255, 0.42)',
+      '--bg-dark':      '#0a1c1e',
+      '--bg-dark-warm': '#14292c',
+      '--text':         '#0a1a1e',
+      '--text-secondary': '#5c6b6e',
+      '--text-light':   '#94a3a5',
+      '--text-inverse': '#ffffff',
+      '--border':       'rgba(255, 255, 255, 0.6)',
+      '--border-light': 'rgba(10, 26, 30, 0.06)',
+      '--success':      '#10b981',
+      '--danger':       '#ef4444',
+      '--shadow-sm':    '0 1px 2px rgba(10, 32, 34, 0.04)',
+      '--shadow':       '0 4px 16px rgba(10, 32, 34, 0.06)',
+      '--shadow-md':    '0 10px 30px rgba(10, 32, 34, 0.08)',
+      '--shadow-lg':    '0 24px 60px rgba(10, 32, 34, 0.12)',
+      '--radius':       '12px',
+      '--radius-lg':    '18px',
+    },
+    extraClass: 'theme-feliz',
+    font: 'Oswald:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700',
+  },
 
   elegantBayt: {
     name: 'Elegant Bayt',
