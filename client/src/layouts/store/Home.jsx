@@ -423,27 +423,33 @@ function ProductRail({ eyebrow, title, products, loading, badge = 'heart' }) {
 function BuiltForExcellence() {
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
-      <p className="eyebrow">Why Choose Feliz?</p>
-      <h2 className="display-head mt-0.5 text-2xl sm:text-[28px]">Built For Excellence</h2>
+      {/* The heading sits inside the left column so the video column starts at
+          the top of the row, level with the eyebrow. Keeping the heading above
+          the grid made the cards share a row with the video and stretch to its
+          aspect-ratio height. */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+        <div className="flex flex-col">
+          <p className="eyebrow">Why Choose Feliz?</p>
+          <h2 className="display-head mt-0.5 text-2xl sm:text-[28px]">Built For Excellence</h2>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {EXCELLENCE.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div key={item.title} className="glass-card flex flex-col items-center rounded-2xl px-3 py-6 text-center">
-                <span className="flex size-9 items-center justify-center rounded-full border border-foreground/15">
-                  <Icon className="size-4" strokeWidth={1.6} />
-                </span>
-                <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{item.title}</h3>
-                <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{item.desc}</p>
-              </div>
-            );
-          })}
+          <div className="mt-5 grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {EXCELLENCE.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="glass-card flex flex-col items-center justify-center rounded-2xl px-3 py-6 text-center">
+                  <span className="flex size-9 items-center justify-center rounded-full border border-foreground/15">
+                    <Icon className="size-4" strokeWidth={1.6} />
+                  </span>
+                  <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{item.title}</h3>
+                  <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{item.desc}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Video card */}
-        <div className="glass-card relative overflow-hidden rounded-2xl">
+        {/* Video card — size unchanged; it now aligns with the eyebrow. */}
+        <div className="glass-card relative self-start overflow-hidden rounded-2xl">
           <ImageSlot alt="Crafted to perfection" className="aspect-[16/11]" />
           <span className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg">
             <Play className="ml-0.5 size-4 fill-foreground text-foreground" />
