@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { formatPrice, CurrencySymbol } from '../utils/currency';
+import { formatPrice, CurrencySymbol, CURRENCY } from '../utils/currency';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Lock, User, X } from 'lucide-react';
+import { ShieldCheck, User, X } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 
 const toastStyle = {
@@ -23,19 +23,9 @@ const toastStyle = {
   iconTheme: { primary: '#c4784a', secondary: '#f5f0eb' },
 };
 
-function loadScript(src) {
-  return new Promise((resolve) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = src;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
+// Store WhatsApp number — orders are handed off here instead of an online
+// payment gateway. Keep in sync with FloatingWhatsApp.jsx.
+const WHATSAPP_NUMBER = '96894103737';
 
 // The store ships within Qatar — popular cities suggested in the address combobox
 // (customers can also type any city not listed).
@@ -50,8 +40,7 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const processingPayment = useRef(false);
+  const processingOrder = useRef(false);
   const isGuest = !user;
 
   // Coupon state
@@ -62,12 +51,8 @@ export default function Checkout() {
   const [availableCoupons, setAvailableCoupons] = useState([]);
   const [showCoupons, setShowCoupons] = useState(false);
 
-  // Tax state
+  // Tax state (prices are tax-inclusive — shown for info, not added on top)
   const [taxInfo, setTaxInfo] = useState({ totalTax: 0, breakdown: null });
-
-  // Shipping state
-  const [shippingOptions, setShippingOptions] = useState(null);
-  const [shippingMethod, setShippingMethod] = useState('standard');
 
   const [form, setForm] = useState({
     fullName: user?.name || '',
@@ -77,7 +62,6 @@ export default function Checkout() {
     state: '',
     country: 'Qatar',
     phone: user?.phone || '',
-    paymentMethod: 'cod',
   });
 
   // Save abandoned cart when checkout page loads
@@ -98,33 +82,22 @@ export default function Checkout() {
       .catch(() => setAvailableCoupons([]));
   }, []);
 
+  // Fetch tax whenever the state/city changes (prices are tax-inclusive).
   useEffect(() => {
-    api.get('/payment/gateways')
-      .then((res) => {
-        setPaymentMethods(res.data);
-      })
-      .catch(() => {
-        setPaymentMethods([
-          { id: 'cod', name: 'Cash on Delivery', description: 'Pay when you receive your order' },
-          { id: 'bank_transfer', name: 'Bank Transfer', description: 'Direct bank transfer' },
-        ]);
-      });
-  }, [isGuest]);
+    if (!form.state.trim()) { setTaxInfo({ totalTax: 0, breakdown: null }); return; }
+    api.post('/payment/calculate-tax', {
+      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity })),
+      shippingState: form.state,
+    }).then((res) => setTaxInfo(res.data)).catch(() => {});
+  }, [form.state, cart]);
 
-  if (cart.length === 0 && !processingPayment.current) {
+  if (cart.length === 0 && !processingOrder.current) {
     navigate('/cart');
     return null;
   }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const successUrl = (orderNum, failed) => {
-    let url = `/order-success?orderNumber=${orderNum}`;
-    if (failed) url += '&status=failed';
-    if (isGuest && form.email) url += `&email=${encodeURIComponent(form.email)}`;
-    return url;
   };
 
   const getShippingAddress = () => ({
@@ -144,7 +117,7 @@ export default function Checkout() {
         cartTotal,
         cartCategories: [...new Set(cart.map((item) => item.category))],
         cartProductIds: cart.map((item) => item.id),
-        paymentMethod: form.paymentMethod,
+        paymentMethod: 'whatsapp',
       });
       setCouponApplied(data);
       setCouponCode(code);
@@ -165,312 +138,33 @@ export default function Checkout() {
     setCouponError('');
   };
 
-  // Fetch tax whenever state changes
-  useEffect(() => {
-    if (!form.state.trim()) { setTaxInfo({ totalTax: 0, breakdown: null }); return; }
-    api.post('/payment/calculate-tax', {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity })),
-      shippingState: form.state,
-    }).then((res) => setTaxInfo(res.data)).catch(() => {});
-  }, [form.state, cart]);
-
-  // Fetch shipping rates
-  useEffect(() => {
-    const afterCoupon = Math.max(0, cartTotal - (couponApplied?.discount || 0));
-    api.post('/payment/calculate-shipping', {
-      subtotal: afterCoupon,
-      itemCount: cart.reduce((s, i) => s + i.quantity, 0),
-      shippingState: form.state,
-    }).then((res) => setShippingOptions(res.data)).catch(() => {});
-  }, [cartTotal, couponApplied, cart, form.state]);
-
   const discountAmount = couponApplied?.discount || 0;
   const taxAmount = taxInfo.totalTax || 0;
+  const grandTotal = Math.max(0, cartTotal - discountAmount);
 
-  const handleCODOrder = async () => {
-    const orderData = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      paymentMethod: form.paymentMethod,
-      couponCode: couponApplied?.code || null,
-    };
-
-    if (isGuest) {
-      orderData.guestEmail = form.email;
-      const { data } = await api.post('/orders/guest', orderData);
-      api.post('/abandoned-cart/recover', { email: form.email }).catch(() => {});
-      // Mark payment as processing before clearCart() so the empty-cart guard
-      // doesn't redirect to /cart instead of the order-success page.
-      processingPayment.current = true;
-      navigate(successUrl(data.orderNumber));
-      clearCart();
-    } else {
-      const { data } = await api.post('/orders', orderData);
-      api.post('/abandoned-cart/recover', { email: user.email }).catch(() => {});
-      processingPayment.current = true;
-      navigate(successUrl(data.orderNumber));
-      clearCart();
-    }
-  };
-
-  const handleRazorpayPayment = async () => {
-    const loaded = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
-    if (!loaded) {
-      toast.error('Failed to load Razorpay. Check your internet connection.');
-      return;
-    }
-
-    const createPayload = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      gateway: 'razorpay',
-      couponCode: couponApplied?.code || null,
-    };
-    if (isGuest) createPayload.guestEmail = form.email;
-
-    const { data } = await api.post('/payment/create-order', createPayload);
-
-    const { payment, order } = data;
-
-    const options = {
-      key: payment.key,
-      amount: payment.amount,
-      currency: payment.currency || 'QAR',
-      name: payment.name,
-      description: payment.description,
-      order_id: payment.orderId,
-      prefill: {
-        name: form.fullName,
-        email: isGuest ? form.email : user.email,
-        contact: form.phone,
-      },
-      notes: {
-        order_number: order.orderNumber,
-      },
-      theme: { color: '#1a1614' },
-      handler: async function (response) {
-        try {
-          const verifyRes = await api.post('/payment/verify', {
-            orderNumber: order.orderNumber,
-            gateway: 'razorpay',
-            paymentData: {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            },
-          });
-
-          if (verifyRes.data.verified) {
-            navigate(successUrl(order.orderNumber));
-            clearCart();
-          } else {
-            navigate(successUrl(order.orderNumber, true));
-          }
-        } catch (error) {
-          navigate(successUrl(order.orderNumber, true));
-        }
-        setLoading(false);
-      },
-      modal: {
-        confirm_close: true,
-        ondismiss: function () {
-          toast.error('Payment cancelled', toastStyle);
-          setLoading(false);
-        },
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-      console.error('Razorpay payment failed:', response.error);
-      toast.error(response.error.description || 'Payment failed', toastStyle);
-      setLoading(false);
+  // Build the WhatsApp order message: items, totals, and customer details.
+  const buildWhatsAppMessage = (order) => {
+    const lines = [];
+    lines.push(`New order — ${order.orderNumber}`);
+    lines.push('');
+    lines.push('Items:');
+    cart.forEach((item, i) => {
+      const variant = item.selectedVariant ? ` (${Object.values(item.selectedVariant).join(', ')})` : '';
+      lines.push(`${i + 1}. ${item.name}${variant} x ${item.quantity} — ${CURRENCY} ${formatPrice(parseFloat(item.price) * item.quantity)}`);
     });
-    processingPayment.current = true;
-    rzp.open();
-  };
-
-  const handleStripePayment = async () => {
-    const createPayload = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      gateway: 'stripe',
-      couponCode: couponApplied?.code || null,
-    };
-    if (isGuest) createPayload.guestEmail = form.email;
-
-    const { data } = await api.post('/payment/create-order', createPayload);
-    if (data.payment?.sessionUrl) {
-      // Cart is cleared on the order-success page only after a successful return
-      // — not here — so an abandoned/failed online payment keeps the cart intact.
-      window.location.href = data.payment.sessionUrl;
-    } else {
-      toast.error('Failed to create Stripe checkout session');
+    lines.push('');
+    lines.push(`Subtotal: ${CURRENCY} ${formatPrice(cartTotal)}`);
+    if (discountAmount > 0) {
+      lines.push(`Discount${couponApplied?.code ? ` (${couponApplied.code})` : ''}: -${CURRENCY} ${formatPrice(discountAmount)}`);
     }
-  };
-
-  const handleNomodPayment = async () => {
-    const createPayload = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      gateway: 'nomod',
-      couponCode: couponApplied?.code || null,
-    };
-    if (isGuest) createPayload.guestEmail = form.email;
-
-    const { data } = await api.post('/payment/create-order', createPayload);
-    if (data.payment?.sessionUrl) {
-      // Cart is cleared on the order-success page only after a successful return
-      // — not here — so an abandoned/failed online payment keeps the cart intact.
-      window.location.href = data.payment.sessionUrl;
-    } else {
-      toast.error('Failed to create Nomod checkout session');
-    }
-  };
-
-  const handleTapPayment = async () => {
-    const createPayload = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      gateway: 'tap',
-      couponCode: couponApplied?.code || null,
-    };
-    if (isGuest) createPayload.guestEmail = form.email;
-
-    const { data } = await api.post('/payment/create-order', createPayload);
-    if (data.payment?.sessionUrl) {
-      // Cart is cleared on the order-success page only after a successful return
-      // — not here — so an abandoned/failed online payment keeps the cart intact.
-      window.location.href = data.payment.sessionUrl;
-    } else {
-      toast.error('Failed to create Tap checkout session');
-    }
-  };
-
-  const handleTamaraPayment = async () => {
-    const createPayload = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      gateway: 'tamara',
-      couponCode: couponApplied?.code || null,
-    };
-    if (isGuest) createPayload.guestEmail = form.email;
-
-    const { data } = await api.post('/payment/create-order', createPayload);
-    if (data.payment?.sessionUrl) {
-      // Cart is cleared on the order-success page only after a successful return
-      // — not here — so an abandoned/failed online payment keeps the cart intact.
-      window.location.href = data.payment.sessionUrl;
-    } else {
-      toast.error('Failed to create Tamara checkout session');
-    }
-  };
-
-  const verifyPaytmOrder = async (orderNumber, paymentOrderId) => {
-    try {
-      const verifyRes = await api.post('/payment/verify', {
-        orderNumber,
-        gateway: 'paytm',
-        paymentData: { orderId: paymentOrderId },
-      });
-
-      if (verifyRes.data.verified) {
-        navigate(successUrl(orderNumber));
-        clearCart();
-        return true;
-      } else {
-        navigate(successUrl(orderNumber, true));
-        return false;
-      }
-    } catch (error) {
-      console.error('Paytm verify error:', error);
-      navigate(successUrl(orderNumber, true));
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePaytmPayment = async () => {
-    const paytmPayload = {
-      items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
-      shippingAddress: getShippingAddress(),
-      shippingMethod,
-      gateway: 'paytm',
-      couponCode: couponApplied?.code || null,
-    };
-    if (isGuest) paytmPayload.guestEmail = form.email;
-
-    const { data } = await api.post('/payment/create-order', paytmPayload);
-
-    const { payment, order } = data;
-    const scriptUrl = `${payment.baseUrl}/merchantpgpui/checkoutjs/merchants/${payment.mid}.js`;
-
-    const loaded = await loadScript(scriptUrl);
-    if (!loaded) {
-      toast.error('Failed to load Paytm checkout. Check your internet connection.');
-      setLoading(false);
-      return;
-    }
-
-    let handled = false;
-
-    const config = {
-      root: '',
-      flow: 'DEFAULT',
-      data: {
-        orderId: payment.orderId,
-        token: payment.txnToken,
-        tokenType: 'TXN_TOKEN',
-        amount: payment.amount.toFixed(2),
-      },
-      handler: {
-        notifyMerchant: function (eventName, eventData) {
-          console.log('Paytm notifyMerchant:', eventName, eventData);
-          if (eventName === 'APP_CLOSED') {
-            if (!handled) {
-              handled = true;
-              verifyPaytmOrder(order.orderNumber, payment.orderId);
-            }
-          }
-        },
-        transactionStatus: function (response) {
-          console.log('Paytm transactionStatus:', JSON.stringify(response));
-          if (handled) return;
-          handled = true;
-          try {
-            if (window.Paytm && window.Paytm.CheckoutJS) {
-              window.Paytm.CheckoutJS.close();
-            }
-          } catch (e) {}
-          verifyPaytmOrder(order.orderNumber, payment.orderId);
-        },
-      },
-    };
-
-    if (window.Paytm && window.Paytm.CheckoutJS) {
-      window.Paytm.CheckoutJS.onLoad(function () {
-        window.Paytm.CheckoutJS.init(config)
-          .then(function () {
-            processingPayment.current = true;
-            window.Paytm.CheckoutJS.invoke();
-          })
-          .catch(function (error) {
-            console.error('Paytm init error:', error);
-            toast.error('Failed to initialize Paytm checkout');
-            setLoading(false);
-          });
-      });
-    } else {
-      toast.error('Paytm checkout not available');
-      setLoading(false);
-    }
+    lines.push(`Total: ${CURRENCY} ${formatPrice(order.totalAmount)}`);
+    lines.push('');
+    lines.push('Customer details:');
+    lines.push(`Name: ${form.fullName}`);
+    lines.push(`Phone: ${form.phone}`);
+    if (form.email) lines.push(`Email: ${form.email}`);
+    lines.push(`Address: ${[form.address, form.city, form.country].filter(Boolean).join(', ')}`);
+    return lines.join('\n');
   };
 
   const handleSubmit = async (e) => {
@@ -482,40 +176,36 @@ export default function Checkout() {
     }
 
     setLoading(true);
-
     try {
-      const method = form.paymentMethod;
+      const orderData = {
+        items: cart.map((item) => ({ productId: item.id, quantity: item.quantity, selectedVariant: item.selectedVariant || null })),
+        shippingAddress: getShippingAddress(),
+        shippingMethod: 'standard',
+        paymentMethod: 'whatsapp',
+        couponCode: couponApplied?.code || null,
+      };
 
-      if (method === 'cod' || method === 'bank_transfer') {
-        await handleCODOrder();
-      } else if (method === 'razorpay') {
-        await handleRazorpayPayment();
-      } else if (method === 'paytm') {
-        await handlePaytmPayment();
-      } else if (method === 'stripe') {
-        await handleStripePayment();
-      } else if (method === 'nomod') {
-        await handleNomodPayment();
-      } else if (method === 'tap') {
-        await handleTapPayment();
-      } else if (method === 'tamara') {
-        await handleTamaraPayment();
+      let order;
+      if (isGuest) {
+        orderData.guestEmail = form.email;
+        ({ data: order } = await api.post('/orders/guest', orderData));
+        api.post('/abandoned-cart/recover', { email: form.email }).catch(() => {});
       } else {
-        toast.error(`${method} gateway is not configured yet. Please choose another method.`);
-        setLoading(false);
-        return;
+        ({ data: order } = await api.post('/orders', orderData));
+        api.post('/abandoned-cart/recover', { email: user.email }).catch(() => {});
       }
+
+      // Hand the order off to WhatsApp. Mark processing so the empty-cart guard
+      // doesn't redirect to /cart between clearCart() and the redirect.
+      const message = buildWhatsAppMessage(order);
+      processingOrder.current = true;
+      clearCart();
+      window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to place order');
-    } finally {
+      toast.error(error.response?.data?.message || 'Failed to place order', toastStyle);
       setLoading(false);
     }
   };
-
-  const shipping = shippingOptions?.[shippingMethod]?.rate ?? 0;
-  // Tax is inclusive in price — not added on top
-  const grandTotal = Math.max(0, cartTotal - discountAmount + shipping);
-  const isOnlinePayment = !['cod', 'bank_transfer'].includes(form.paymentMethod);
 
   const Row = ({ label, value, className }) => (
     <div className={cn('flex justify-between text-sm', className)}>
@@ -544,9 +234,8 @@ export default function Checkout() {
       )}
 
       <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1fr_380px]">
-        {/* Left: address + payment */}
+        {/* Left: address */}
         <div className="flex min-w-0 flex-col gap-8">
-          {/* Address */}
           <section className="rounded-lg border border-border bg-card p-6">
             {isGuest && (
               <div className="mb-5 flex flex-col gap-2">
@@ -601,57 +290,6 @@ export default function Checkout() {
                 <Input id="phone" name="phone" value={form.phone} onChange={handleChange} required />
               </div>
             </div>
-          </section>
-
-          {/* Payment */}
-          <section className="rounded-lg border border-border bg-card p-6">
-            <h3 className="mb-4 font-medium">{t('checkout.paymentMethod')}</h3>
-            <RadioGroup
-              value={form.paymentMethod}
-              onValueChange={(v) => setForm((f) => ({ ...f, paymentMethod: v }))}
-              className="gap-3"
-            >
-              {paymentMethods.map((method) => (
-                <Label
-                  key={method.id}
-                  htmlFor={`pm-${method.id}`}
-                  className={cn(
-                    'flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors',
-                    form.paymentMethod === method.id ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent',
-                  )}
-                >
-                  <RadioGroupItem id={`pm-${method.id}`} value={method.id} className="mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-medium">
-                      {method.id === 'cod' ? t('payment.codName')
-                        : method.id === 'bank_transfer' ? t('payment.bankName')
-                        : method.id === 'tap' ? t('payment.tapName')
-                        : method.name}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {method.id === 'cod' ? t('payment.codDesc')
-                        : method.id === 'bank_transfer' ? t('payment.bankDesc')
-                        : method.id === 'tap' ? t('payment.tapDesc')
-                        : method.description}
-                    </span>
-                  </div>
-                </Label>
-              ))}
-            </RadioGroup>
-
-            {isOnlinePayment && (
-              <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                <Lock className="size-3.5" /> {t('checkout.securedPayment')}
-              </p>
-            )}
-
-            <Button type="submit" size="lg" className="mt-6 w-full" disabled={loading}>
-              {loading
-                ? t('checkout.placingOrder')
-                : isOnlinePayment
-                  ? <>{t('checkout.placeOrder')} — <Money amount={grandTotal} /></>
-                  : t('checkout.placeOrder')}
-            </Button>
           </section>
         </div>
 
@@ -748,46 +386,19 @@ export default function Checkout() {
               )}
             </div>
 
-            {/* Shipping */}
-            {shippingOptions && (
-              <RadioGroup value={shippingMethod} onValueChange={setShippingMethod} className="mt-4 gap-2">
-                {['standard', 'express'].map((key) => {
-                  const opt = shippingOptions[key];
-                  if (!opt) return null;
-                  return (
-                    <Label
-                      key={key}
-                      htmlFor={`ship-${key}`}
-                      className={cn(
-                        'flex cursor-pointer items-center gap-3 rounded-md border p-3 text-sm transition-colors',
-                        shippingMethod === key ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent',
-                      )}
-                    >
-                      <RadioGroupItem id={`ship-${key}`} value={key} />
-                      <div className="flex flex-1 flex-col">
-                        <span className="font-medium">
-                          {key === 'standard' && opt.rate === 0 ? t('shippingOpt.freeShipping') : t(`shippingOpt.${key}`, { defaultValue: opt.label })}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{t(`shippingOpt.${key}Days`, { defaultValue: opt.days })}</span>
-                      </div>
-                      <span className="font-medium">{opt.rate === 0 ? t('shippingOpt.free') : <Money amount={opt.rate} />}</span>
-                    </Label>
-                  );
-                })}
-                {shippingOptions.amountForFree && (
-                  <p className="text-xs text-muted-foreground">{t('shippingOpt.addMorePre')} <Money amount={shippingOptions.amountForFree} /> {t('shippingOpt.addMorePost')}</p>
-                )}
-              </RadioGroup>
-            )}
-
             <Separator className="my-4" />
             <div className="flex justify-between text-base font-semibold">
               <span>{t('cart.total')}</span>
               <span><Money amount={grandTotal} /></span>
             </div>
 
+            <Button type="submit" size="lg" className="mt-6 w-full gap-2" disabled={loading}>
+              <FaWhatsapp className="size-4" />
+              {loading ? t('checkout.placingOrder') : t('checkout.orderViaWhatsApp', { defaultValue: 'Order via WhatsApp' })}
+            </Button>
+
             <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="size-4 text-emerald-600" /> {t('checkout.secureCheckout')}
+              <ShieldCheck className="size-4 text-emerald-600" /> {t('checkout.orderViaWhatsAppNote', { defaultValue: 'You’ll be redirected to WhatsApp to confirm your order.' })}
             </p>
           </div>
         </aside>
