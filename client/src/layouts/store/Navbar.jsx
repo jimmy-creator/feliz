@@ -46,8 +46,6 @@ function announcementIcon(text = '') {
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/products', label: 'All Sinks' },
-  { to: '/#materials', label: 'Sink Material' },
-  { to: '/products?category=Accessories', label: 'Accessories' },
   { to: '/about', label: 'About Us' },
 ];
 
