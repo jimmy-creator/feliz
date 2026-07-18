@@ -46,6 +46,22 @@ router.get('/product/:productId', async (req, res) => {
   }
 });
 
+// Recent positive reviews across all products (for the home "Happy Homes" strip)
+router.get('/recent', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 9, 20);
+    const reviews = await Review.findAll({
+      where: { approved: true, rating: { [Op.gte]: 4 } },
+      order: [['createdAt', 'DESC'], ['id', 'DESC']],
+      limit,
+      include: [{ model: Product, attributes: ['name', 'slug'] }],
+    });
+    res.json(reviews);
+  } catch (error) {
+    res.json([]);
+  }
+});
+
 // Submit a review (logged-in users)
 router.post('/', protect, async (req, res) => {
   try {

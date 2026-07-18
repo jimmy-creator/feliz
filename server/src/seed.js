@@ -3,7 +3,8 @@ dotenv.config();
 
 import { fileURLToPath } from 'url';
 import sequelize from './config/database.js';
-import { User, Product, Category, Setting } from './models/index.js';
+import { User, Product, Category, Setting, Review } from './models/index.js';
+import { buildReviews, ratingSummary } from './reviewSeed.js';
 
 // Placeholder catalogue for the FELIZ sink store. Names/prices/taglines follow
 // the approved design; real photography is added later via the admin.
@@ -164,6 +165,16 @@ const seed = async () => {
 
     await Product.bulkCreate(products);
     await Category.bulkCreate(categories.map((c) => ({ ...c, active: true })));
+
+    // Seed marketing reviews and recompute each product's rating/count from them
+    // (overwrites the placeholder ratings/numReviews above with real numbers).
+    const createdProducts = await Product.findAll({ attributes: ['id'] });
+    const reviews = buildReviews(createdProducts);
+    await Review.bulkCreate(reviews);
+    for (const p of createdProducts) {
+      const own = reviews.filter((r) => r.productId === p.id);
+      await Product.update(ratingSummary(own), { where: { id: p.id } });
+    }
 
     // Announcement bar messages (editable later in Admin → Settings).
     await Setting.upsert({

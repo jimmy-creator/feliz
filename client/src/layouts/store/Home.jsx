@@ -63,10 +63,11 @@ const MID_BANNERS_FALLBACK = [
   },
 ];
 
+// Fallback for the "Happy Homes" strip, shown until real reviews exist.
 const TESTIMONIALS = [
-  { name: 'Rohit Sharma', quote: '"Amazing quality and build. FELIZ sinks totally upgraded my kitchen!"' },
-  { name: 'Priya Nair', quote: '"Elegant design and super durable. Highly recommended!"' },
-  { name: 'Anjali Desai', quote: '"The finish is premium and it looks stunning in my kitchen."' },
+  { name: 'Rohit Sharma', rating: 5, quote: 'Amazing quality and build. FELIZ sinks totally upgraded my kitchen!' },
+  { name: 'Priya Nair', rating: 5, quote: 'Elegant design and super durable. Highly recommended!' },
+  { name: 'Anjali Desai', rating: 5, quote: 'The finish is premium and it looks stunning in my kitchen.' },
 ];
 
 const TRUST_BAR = [
@@ -543,9 +544,15 @@ function MidBanners({ banners }) {
   );
 }
 
-function HappyHomes() {
+/* Real customer reviews (latest positive ones across all products), fetched
+   from /reviews/recent. Falls back to static testimonials when none exist. */
+function HappyHomes({ reviews }) {
   const railRef = useRef(null);
   const scrollBy = (dir) => railRef.current?.scrollBy({ left: dir * 320, behavior: 'smooth' });
+
+  const items = reviews.length
+    ? reviews.map((r) => ({ name: r.name, rating: r.rating, quote: r.comment }))
+    : TESTIMONIALS;
 
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
@@ -562,16 +569,16 @@ function HappyHomes() {
         </button>
 
         <div ref={railRef} className="flex gap-4 overflow-x-auto scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {TESTIMONIALS.map(({ name, quote }) => (
+          {items.map(({ name, rating, quote }, i) => (
             <article
-              key={name}
+              key={i}
               className="glass-card flex w-[calc(100%-1rem)] shrink-0 gap-4 rounded-2xl p-5 sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.7rem)]"
             >
               <ImageSlot alt={name.split(' ')[0]} className="size-12 shrink-0 rounded-full" />
               <div className="min-w-0">
                 <p className="text-[12px] font-bold text-foreground">{name}</p>
-                <span className="mt-1 flex"><Stars rating={5} /></span>
-                <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{quote}</p>
+                <span className="mt-1 flex"><Stars rating={rating} /></span>
+                <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">&ldquo;{quote}&rdquo;</p>
               </div>
             </article>
           ))}
@@ -620,6 +627,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [excellence, setExcellence] = useState([]);
   const [midBanners, setMidBanners] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   // Seeded from cache so the hero doesn't flash the fallback on repeat visits.
   const [banners, setBanners] = useState(() => {
@@ -649,6 +657,10 @@ export default function Home() {
       .then((res) => setMidBanners(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
 
+    api.get('/reviews/recent?limit=9')
+      .then((res) => setReviews(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+
     api.get('/products?featured=true&limit=10')
       .then((res) => setFeatured(res.data.products || []))
       .catch(() => {})
@@ -675,7 +687,7 @@ export default function Home() {
 
       <BuiltForExcellence cards={excellence} />
       <MidBanners banners={midBanners} />
-      <HappyHomes />
+      <HappyHomes reviews={reviews} />
 
       <ProductRail
         eyebrow="Shop Best Selling Sinks"
