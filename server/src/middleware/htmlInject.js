@@ -28,7 +28,7 @@ let STORE_NAME = '';
 let DEFAULT_OG = '';
 let DEFAULT_DESC = '';
 
-const CURRENCY_CODE = process.env.CURRENCY_CODE || 'QAR';
+const CURRENCY_CODE = process.env.CURRENCY_CODE || 'OMR';
 const I18N_ON = process.env.FEATURE_I18N === 'true';
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();   // url → { html, ts }

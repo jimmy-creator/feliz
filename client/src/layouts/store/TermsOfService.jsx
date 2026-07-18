@@ -21,7 +21,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>3. Products &amp; Pricing</h2>
         <ul>
-          <li>All prices are listed in Qatar Riyals (QAR) and are inclusive of VAT where applicable.</li>
+          <li>All prices are listed in Omani Rials (OMR) and are inclusive of VAT where applicable.</li>
           <li>Prices may change without prior notice. The price applicable to your order is the one shown at the time you place it.</li>
           <li>Product photography is illustrative; minor variation in colour and finish may occur between batches.</li>
           <li>We make every effort to display accurate stock, but errors may occasionally occur; we reserve the right to cancel and refund affected orders.</li>
@@ -120,7 +120,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>3. المنتجات والأسعار</h2>
         <ul>
-          <li>جميع الأسعار بالريال القطري (QAR) وشاملة لضريبة القيمة المضافة حيثما انطبق.</li>
+          <li>جميع الأسعار بالريال العُماني (OMR) وشاملة لضريبة القيمة المضافة حيثما انطبق.</li>
           <li>قد تتغيّر الأسعار دون إشعار مسبق. السعر المطبَّق على طلبك هو السعر المعروض وقت تقديمه.</li>
           <li>صور المنتجات للتوضيح؛ وقد يحدث اختلاف بسيط في اللون أو اللمسة النهائية بين الدفعات.</li>
           <li>نبذل قصارى جهدنا لعرض المخزون بدقّة، لكن قد تحدث أخطاء في بعض الأحيان؛ ونحتفظ بالحق في إلغاء الطلبات المتأثّرة واسترداد المبالغ.</li>

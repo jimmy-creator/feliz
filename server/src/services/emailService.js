@@ -484,8 +484,8 @@ export async function sendNewOrderNotification(order) {
 export async function sendQuoteEmail({ to, customerName, request, bankDetails }) {
   const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
   const quoteUrl = `${clientUrl}/wholesale/my-quotes/${request.id}`;
-  const currency = request.quotedCurrency || process.env.CURRENCY_CODE || 'QAR';
-  const symbol = currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : (currency === 'QAR' ? 'QAR ' : `${currency} `));
+  const currency = request.quotedCurrency || process.env.CURRENCY_CODE || 'OMR';
+  const symbol = currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : (currency === 'OMR' ? 'OMR ' : `${currency} `));
   const fmt = (n) => `${symbol}${(parseFloat(n) || 0).toFixed(currencyDecimals)}`;
 
   const validUntil = request.quotedValidUntil

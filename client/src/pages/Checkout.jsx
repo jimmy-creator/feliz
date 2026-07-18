@@ -214,7 +214,7 @@ export default function Checkout() {
     </div>
   );
 
-  // Price with the QAR currency label (text via <CurrencySymbol />).
+  // Price with the OMR currency label (text via <CurrencySymbol />).
   // nowrap keeps the label glued to the amount.
   const Money = ({ amount, sign = '' }) => (
     <span className="whitespace-nowrap">{sign}<CurrencySymbol />{formatPrice(amount)}</span>

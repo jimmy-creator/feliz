@@ -22,7 +22,7 @@ export function formatPrice(value) {
   return (parseFloat(value) || 0).toFixed(CURRENCY_DECIMALS);
 }
 
-// Locale-aware currency label — always rendered as text (e.g. "QAR" / "ر.ق"),
+// Locale-aware currency label — always rendered as text (e.g. "OMR" / "ر.ع."),
 // never an image glyph. Re-evaluates on every render so it flips when the user
 // toggles the language switcher.
 export function CurrencySymbol({ className = '' }) {

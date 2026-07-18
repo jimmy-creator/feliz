@@ -363,7 +363,7 @@ async function getStripeInstance() {
 
 class StripeGateway extends PaymentGateway {
 
-  async createOrder(amount, currency = 'QAR', receipt, notes = {}) {
+  async createOrder(amount, currency = 'OMR', receipt, notes = {}) {
     const customer = notes.customer || {};
     const session = await (await getStripeInstance()).checkout.sessions.create({
       mode: 'payment',
@@ -425,7 +425,7 @@ class NomodGateway extends PaymentGateway {
     this.clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
   }
 
-  async createOrder(amount, currency = 'QAR', receipt, notes = {}) {
+  async createOrder(amount, currency = 'OMR', receipt, notes = {}) {
     const customer = notes.customer || {};
     const orderItems = notes.items || [];
 
@@ -582,11 +582,11 @@ class TapGateway extends PaymentGateway {
     this.clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
   }
 
-  async createOrder(amount, currency = 'QAR', receipt, notes = {}) {
+  async createOrder(amount, currency = 'OMR', receipt, notes = {}) {
     const customer = notes.customer || {};
     const orderItems = notes.items || [];
 
-    // Most GCC currencies are 2-decimal; only KWD/BHD/OMR use 3. QAR is 2.
+    // Most GCC currencies are 2-decimal; only KWD/BHD/OMR use 3. OMR is 3.
     const fmt = (n) => Number.parseFloat(n).toFixed(['KWD', 'BHD', 'OMR'].includes(currency.toUpperCase()) ? 3 : 2);
 
     // Split phone into country_code + number. Default to Qatar (+974).
@@ -715,7 +715,7 @@ class TamaraGateway extends PaymentGateway {
     return { ok: resp.ok, status: resp.status, data };
   }
 
-  async createOrder(amount, currency = 'QAR', receipt, notes = {}) {
+  async createOrder(amount, currency = 'OMR', receipt, notes = {}) {
     const customer = notes.customer || {};
     const addr = notes.shippingAddress || {};
     const orderItems = notes.items || [];

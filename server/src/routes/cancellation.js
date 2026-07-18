@@ -123,7 +123,7 @@ router.post('/:id/refund', protect, admin, async (req, res) => {
     }
 
     res.json({
-      message: `Refund of ${process.env.CURRENCY_SYMBOL || 'QAR'}${refundAmount.toFixed(2)} processed`,
+      message: `Refund of ${process.env.CURRENCY_SYMBOL || 'OMR'}${refundAmount.toFixed(2)} processed`,
       order: order.toJSON(),
     });
   } catch (error) {
