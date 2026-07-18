@@ -253,7 +253,7 @@ function BannerHero({ banners }) {
               {banner.mobileImage && <source media="(max-width: 720px)" srcSet={banner.mobileImage} />}
               <img
                 src={banner.image}
-                alt={banner.title || ''}
+                alt={banner.title || 'FELIZ premium kitchen sinks'}
                 className="aspect-[4/5] w-full object-cover sm:aspect-[16/6]"
                 fetchPriority={i === 0 ? 'high' : 'auto'}
                 loading={i === 0 ? 'eager' : 'lazy'}
