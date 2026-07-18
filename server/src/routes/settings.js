@@ -101,15 +101,20 @@ router.put('/mid-banners', protect, admin, async (req, res) => {
       return res.status(400).json({ message: 'Provide an array of up to 3 mid-page sections' });
     }
     // Normalise to the known shape and cap each section at 3 cards.
+    // *Ar fields are optional Arabic overrides shown when the locale is Arabic.
     const clean = banners.map((b) => ({
       title: b.title || '',
+      titleAr: b.titleAr || '',
       subtitle: b.subtitle || '',
+      subtitleAr: b.subtitleAr || '',
       cards: Array.isArray(b.cards)
         ? b.cards.slice(0, 3).map((c) => ({
             image: c.image || '',
             mobileImage: c.mobileImage || '',
             title: c.title || '',
+            titleAr: c.titleAr || '',
             subtitle: c.subtitle || '',
+            subtitleAr: c.subtitleAr || '',
           }))
         : [],
     }));
@@ -159,9 +164,14 @@ router.put('/announcements', protect, admin, async (req, res) => {
   try {
     const { items } = req.body;
     if (!Array.isArray(items) || items.length > 10) {
-      return res.status(400).json({ message: 'Provide an array of up to 10 announcement strings' });
+      return res.status(400).json({ message: 'Provide an array of up to 10 announcements' });
     }
-    const clean = items.map((s) => String(s || '').trim()).filter(Boolean);
+    // Accept legacy plain strings or { text, textAr } objects; always store objects.
+    const clean = items
+      .map((it) => (typeof it === 'string'
+        ? { text: it.trim(), textAr: '' }
+        : { text: String(it?.text || '').trim(), textAr: String(it?.textAr || '').trim() }))
+      .filter((it) => it.text);
     await Setting.upsert({ key: 'announcements', value: JSON.stringify(clean) });
     res.json(clean);
   } catch (error) {
@@ -191,7 +201,9 @@ router.put('/excellence', protect, admin, async (req, res) => {
     const clean = items
       .map((c) => ({
         title: String(c?.title || '').trim(),
+        titleAr: String(c?.titleAr || '').trim(),
         subtitle: String(c?.subtitle || '').trim(),
+        subtitleAr: String(c?.subtitleAr || '').trim(),
         icon: String(c?.icon || '').trim(),
       }))
       .filter((c) => c.title);

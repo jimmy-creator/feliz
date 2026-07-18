@@ -38,13 +38,72 @@
     "aboutUs": "من نحن",
     "contact": "اتصل بنا",
     "explore": "استكشف",
-    "wholesale": "البيع بالجملة"
+    "wholesale": "البيع بالجملة",
+    "allSinks": "جميع الأحواض",
+    "trackOrder": "تتبّع الطلب",
+    "support": "الدعم"
+  },
+  "nav": {
+    "searchPlaceholder": "ابحث عن الأحواض والمواد والإكسسوارات…",
+    "viewAllResults": "عرض كل النتائج عن ‘{{query}}’"
   },
   "home": {
     "bestSellersTitle": "الأكثر مبيعًا",
     "latestLaunchesTitle": "أحدث المنتجات",
     "seoTitle": "أحواض مطبخ مثالية لكل مطبخ",
-    "seoDescription": "فيليز — أحواض مطبخ تجمع بين التصميم العصري والمواد الفاخرة والمتانة الفائقة لتجربة مطبخ مثالية."
+    "seoDescription": "فيليز — أحواض مطبخ تجمع بين التصميم العصري والمواد الفاخرة والمتانة الفائقة لتجربة مطبخ مثالية.",
+    "heroKicker": "جودة عالية. تصميم مثالي.",
+    "heroTitle": "أحواض مثالية",
+    "heroSubtitle": "لكل مطبخ",
+    "heroDesc": "تجمع أحواض مطبخ فيليز بين التصميم العصري والمواد الفاخرة والمتانة الفائقة لتجربة مطبخ مثالية.",
+    "exploreSinks": "استكشف الأحواض",
+    "collectionEyebrow": "تشكيلة أحواضنا",
+    "collectionTitle": "استكشف مجموعتنا",
+    "bestSellersEyebrow": "أحواضنا الأكثر مبيعًا",
+    "topPicksEyebrow": "تسوّق الأحواض الأكثر مبيعًا",
+    "topPicksTitle": "اختيارات مميزة لك",
+    "viewAllSinks": "عرض كل الأحواض",
+    "excellenceEyebrow": "لماذا تختار فيليز؟",
+    "excellenceTitle": "صُنع للتميّز",
+    "craftedTitle": "صُنع بإتقان",
+    "craftedDesc": "مصمم لمطابخ عصرية مُلهمة.",
+    "reviewsEyebrow": "ماذا يقول عملاؤنا",
+    "reviewsTitle": "منازل سعيدة",
+    "viewAllReviews": "عرض كل التقييمات",
+    "feat": {
+      "premiumQuality": "جودة عالية",
+      "premiumQualityDesc": "مواد عالية الجودة",
+      "warranty": "ضمان 10 سنوات",
+      "warrantyDesc": "أداء طويل الأمد",
+      "heatResistant": "مقاوم للحرارة والخدش",
+      "heatResistantDesc": "مصمم للاستخدام اليومي.",
+      "freeShipping": "شحن مجاني",
+      "freeShippingDesc": "توصيل لكل المناطق",
+      "support": "دعم مخصّص",
+      "supportDesc": "دعم العملاء على مدار الساعة"
+    },
+    "excellenceFallback": {
+      "premiumQuality": "جودة عالية",
+      "premiumQualityDesc": "مصنوع من مواد عالية الجودة",
+      "warranty": "ضمان 10 سنوات",
+      "warrantyDesc": "أداء طويل الأمد يمكنك الوثوق به",
+      "heatResistant": "مقاوم للحرارة والخدش",
+      "heatResistantDesc": "مصمم لتحمّل الاستخدام اليومي",
+      "freeShipping": "شحن مجاني",
+      "freeShippingDesc": "على جميع الطلبات",
+      "easyReturns": "إرجاع سهل",
+      "easyReturnsDesc": "إرجاع دون متاعب خلال 7 أيام"
+    }
+  },
+  "trust": {
+    "freeShipping": "شحن مجاني",
+    "freeShippingDesc": "لكل المناطق",
+    "safePayments": "مدفوعات آمنة",
+    "safePaymentsDesc": "آمن 100%",
+    "easyReturns": "إرجاع سهل",
+    "easyReturnsDesc": "إرجاع خلال 7 أيام",
+    "support": "دعم مخصّص",
+    "supportDesc": "دعم العملاء على مدار الساعة"
   },
   "products": {
     "allProducts": "جميع المنتجات",
@@ -156,7 +215,21 @@
     "copyright": "© {{year}} {{store}}. جميع الحقوق محفوظة.",
     "newsletter": "اشترك في نشرتنا البريدية",
     "newsletterPlaceholder": "بريدك الإلكتروني",
-    "subscribe": "اشترك"
+    "subscribe": "اشترك",
+    "information": "معلومات",
+    "customerService": "خدمة العملاء",
+    "brandDesc": "تقدّم فيليز أحواض مطبخ عالية الجودة مصمّمة للمطابخ العصرية بأناقة ومتانة.",
+    "quartzSinks": "أحواض الكوارتز",
+    "singleBowl": "حوض مفرد",
+    "doubleBowl": "حوض مزدوج",
+    "coloredSinks": "أحواض ملوّنة",
+    "accessories": "الإكسسوارات",
+    "warranty": "الضمان",
+    "returnRefund": "الإرجاع والاسترداد",
+    "termsConditions": "الشروط والأحكام",
+    "faqs": "الأسئلة الشائعة",
+    "installationGuide": "دليل التركيب",
+    "careMaintenance": "العناية والصيانة"
   },
   "brand": {
     "tagline": "الأناقة في بيتك"

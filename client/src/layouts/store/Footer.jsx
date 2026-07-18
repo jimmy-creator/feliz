@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'FELIZ';
 
@@ -8,38 +9,38 @@ const SUPPORT_PHONE_2 = '+968 9306 0404';
 const SUPPORT_EMAIL = 'info@felizoman.com';
 const STORE_ADDRESS = 'Barka Sanaya, Sultanate of Oman';
 
-// Footer columns — labels transcribed from the approved design.
+// Footer columns — labels are i18n keys resolved at render.
 const COLUMNS = [
   {
-    title: 'Shop',
+    titleKey: 'footer.shop',
     links: [
-      { label: 'All Sinks', to: '/products' },
-      { label: 'Quartz Sinks', to: '/products?category=Quartz%20Sinks' },
-      { label: 'Single Bowl', to: '/products?category=Single%20Bowl' },
-      { label: 'Double Bowl', to: '/products?category=Double%20Bowl' },
-      { label: 'Colored Sinks', to: '/products?category=Colored%20Sinks' },
-      { label: 'Accessories', to: '/products?category=Accessories' },
+      { labelKey: 'common.allSinks', to: '/products' },
+      { labelKey: 'footer.quartzSinks', to: '/products?category=Quartz%20Sinks' },
+      { labelKey: 'footer.singleBowl', to: '/products?category=Single%20Bowl' },
+      { labelKey: 'footer.doubleBowl', to: '/products?category=Double%20Bowl' },
+      { labelKey: 'footer.coloredSinks', to: '/products?category=Colored%20Sinks' },
+      { labelKey: 'footer.accessories', to: '/products?category=Accessories' },
     ],
   },
   {
-    title: 'Information',
+    titleKey: 'footer.information',
     links: [
-      { label: 'About Us', to: '/about' },
-      { label: 'Warranty', to: '/return-policy' },
-      { label: 'Shipping Policy', to: '/shipping-policy' },
-      { label: 'Return & Refund', to: '/refund-policy' },
-      { label: 'Terms & Conditions', to: '/terms' },
-      { label: 'Privacy Policy', to: '/privacy-policy' },
+      { labelKey: 'footer.aboutUs', to: '/about' },
+      { labelKey: 'footer.warranty', to: '/return-policy' },
+      { labelKey: 'footer.shippingPolicy', to: '/shipping-policy' },
+      { labelKey: 'footer.returnRefund', to: '/refund-policy' },
+      { labelKey: 'footer.termsConditions', to: '/terms' },
+      { labelKey: 'footer.privacyPolicy', to: '/privacy-policy' },
     ],
   },
   {
-    title: 'Customer Service',
+    titleKey: 'footer.customerService',
     links: [
-      { label: 'Contact Us', to: '/contact' },
-      { label: 'Track Order', to: '/orders' },
-      { label: "FAQ's", to: '/contact' },
-      { label: 'Installation Guide', to: '/contact' },
-      { label: 'Care & Maintenance', to: '/contact' },
+      { labelKey: 'footer.contactUs', to: '/contact' },
+      { labelKey: 'common.trackOrder', to: '/orders' },
+      { labelKey: 'footer.faqs', to: '/contact' },
+      { labelKey: 'footer.installationGuide', to: '/contact' },
+      { labelKey: 'footer.careMaintenance', to: '/contact' },
     ],
   },
 ];
@@ -54,18 +55,19 @@ const SOCIALS = [
   { label: 'YouTube', path: 'M18.5 9.2a1.7 1.7 0 0 0-1.2-1.2c-1-.3-5.3-.3-5.3-.3s-4.3 0-5.3.3A1.7 1.7 0 0 0 5.5 9.2 17.6 17.6 0 0 0 5.2 12c0 1 .1 1.9.3 2.8a1.7 1.7 0 0 0 1.2 1.2c1 .3 5.3.3 5.3.3s4.3 0 5.3-.3a1.7 1.7 0 0 0 1.2-1.2c.2-.9.3-1.8.3-2.8s-.1-1.9-.3-2.8ZM10.8 13.9V10l3.4 2-3.4 1.9Z' },
 ];
 
-function FooterCol({ title, links }) {
+function FooterCol({ titleKey, links }) {
+  const { t } = useTranslation();
   return (
     <div>
-      <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">{title}</h4>
+      <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">{t(titleKey)}</h4>
       <ul className="mt-3 flex flex-col gap-2">
-        {links.map(({ label, to }) => (
-          <li key={label}>
+        {links.map(({ labelKey, to }) => (
+          <li key={labelKey}>
             <Link
               to={to}
               className="text-[11px] text-muted-foreground transition-colors hover:text-[color:var(--copper)]"
             >
-              {label}
+              {t(labelKey)}
             </Link>
           </li>
         ))}
@@ -75,6 +77,7 @@ function FooterCol({ title, links }) {
 }
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="mx-auto mt-5 max-w-[1330px] px-3 pb-4 lg:px-6">
       <div className="glass rounded-[22px] px-6 py-8 sm:px-8">
@@ -85,8 +88,7 @@ export default function Footer() {
               <img src="/images/feliz-logo.png" alt={STORE_NAME} className="h-9 w-auto" />
             </Link>
             <p className="mt-3 max-w-[15rem] text-[11px] leading-relaxed text-muted-foreground">
-              FELIZ offers premium quality kitchen sinks designed for modern kitchens
-              with elegance and durability.
+              {t('footer.brandDesc')}
             </p>
             <div className="mt-4 flex gap-2">
               {SOCIALS.map((s) => (
@@ -104,12 +106,12 @@ export default function Footer() {
           </div>
 
           {COLUMNS.map((col) => (
-            <FooterCol key={col.title} {...col} />
+            <FooterCol key={col.titleKey} {...col} />
           ))}
 
           {/* Contact */}
           <div>
-            <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Contact Us</h4>
+            <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground">{t('footer.contactUs')}</h4>
             <ul className="mt-3 flex flex-col gap-2.5 text-[11px] text-muted-foreground">
               <li>
                 <a

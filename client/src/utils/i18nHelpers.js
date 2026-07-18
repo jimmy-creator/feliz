@@ -28,6 +28,16 @@ export function localizedDescription(obj) {
   return obj.description || '';
 }
 
+// Generic: pick obj[`${base}Ar`] in Arabic when present, else obj[base].
+// Used for admin-editable content (banners, mid-page sections, announcements)
+// where the Arabic value is an optional sibling field.
+export function localizedField(obj, base) {
+  if (!obj) return '';
+  const arKey = `${base}Ar`;
+  if (currentLocale().startsWith('ar') && obj[arKey]) return obj[arKey];
+  return obj[base] || '';
+}
+
 // Returns the right currency symbol/abbreviation for the active
 // locale. Set VITE_CURRENCY_SYMBOL_AR=د.ك in the env to override the
 // Arabic one; otherwise falls back to the default (VITE_CURRENCY_SYMBOL).

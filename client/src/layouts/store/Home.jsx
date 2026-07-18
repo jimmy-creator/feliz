@@ -8,7 +8,7 @@ import {
 import api from '../../api/axios';
 import SEO from '../../components/SEO';
 import ProductImage from '../../components/ProductImage';
-import { localizedName } from '../../utils/i18nHelpers';
+import { localizedName, localizedField } from '../../utils/i18nHelpers';
 import { CurrencySymbol, formatPrice } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -22,19 +22,19 @@ import { excellenceIcon } from '@/lib/excellenceIcons';
 // in Admin → Settings → Excellence Cards. Same shape as the stored setting
 // ({ title, subtitle, icon }) so one render path handles both.
 const EXCELLENCE_FALLBACK = [
-  { icon: 'shield', title: 'Premium Quality', subtitle: 'Crafted with high grade materials' },
-  { icon: 'badge', title: '10 Year Warranty', subtitle: 'Long lasting performance you can trust' },
-  { icon: 'flame', title: 'Heat & Scratch Resistant', subtitle: 'Built to withstand everyday use' },
-  { icon: 'truck', title: 'Free Shipping', subtitle: 'Across india on all orders' },
-  { icon: 'returns', title: 'Easy Returns', subtitle: 'Hassle free returns within 7 days' },
+  { icon: 'shield', titleKey: 'home.excellenceFallback.premiumQuality', subtitleKey: 'home.excellenceFallback.premiumQualityDesc' },
+  { icon: 'badge', titleKey: 'home.excellenceFallback.warranty', subtitleKey: 'home.excellenceFallback.warrantyDesc' },
+  { icon: 'flame', titleKey: 'home.excellenceFallback.heatResistant', subtitleKey: 'home.excellenceFallback.heatResistantDesc' },
+  { icon: 'truck', titleKey: 'home.excellenceFallback.freeShipping', subtitleKey: 'home.excellenceFallback.freeShippingDesc' },
+  { icon: 'returns', titleKey: 'home.excellenceFallback.easyReturns', subtitleKey: 'home.excellenceFallback.easyReturnsDesc' },
 ];
 
 const HERO_FEATURES = [
-  { icon: ShieldCheck, title: 'Premium Quality', desc: 'High Grade Materials' },
-  { icon: BadgeCheck, title: '10 Year Warranty', desc: 'Long Lasting Performance' },
-  { icon: Flame, title: 'Heat & Scratch Resistant', desc: 'Built For Daily Use.' },
-  { icon: Truck, title: 'Free Shipping', desc: 'Across India' },
-  { icon: Headset, title: 'Dedicated Support', desc: '24/7 Customer Support' },
+  { icon: ShieldCheck, titleKey: 'home.feat.premiumQuality', descKey: 'home.feat.premiumQualityDesc' },
+  { icon: BadgeCheck, titleKey: 'home.feat.warranty', descKey: 'home.feat.warrantyDesc' },
+  { icon: Flame, titleKey: 'home.feat.heatResistant', descKey: 'home.feat.heatResistantDesc' },
+  { icon: Truck, titleKey: 'home.feat.freeShipping', descKey: 'home.feat.freeShippingDesc' },
+  { icon: Headset, titleKey: 'home.feat.support', descKey: 'home.feat.supportDesc' },
 ];
 
 // Fallback for the mid-page sections, shown until an admin saves any in
@@ -71,15 +71,17 @@ const TESTIMONIALS = [
 ];
 
 const TRUST_BAR = [
-  { icon: Truck, title: 'Free Shipping', desc: 'Across india' },
-  { icon: CreditCard, title: 'Safe Payments', desc: '100% Secure' },
-  { icon: RotateCcw, title: 'Easy Returns', desc: '7 Days Return' },
-  { icon: Headset, title: 'Dedicated Support', desc: '24/7 Customer Support' },
+  { icon: Truck, titleKey: 'trust.freeShipping', descKey: 'trust.freeShippingDesc' },
+  { icon: CreditCard, titleKey: 'trust.safePayments', descKey: 'trust.safePaymentsDesc' },
+  { icon: RotateCcw, titleKey: 'trust.easyReturns', descKey: 'trust.easyReturnsDesc' },
+  { icon: Headset, titleKey: 'trust.support', descKey: 'trust.supportDesc' },
 ];
 
 // ── Building blocks ───────────────────────────────────────────────────────
 
-function SectionHead({ eyebrow, title, to, viewAllLabel = 'View All Sinks', centered = false }) {
+function SectionHead({ eyebrow, title, to, viewAllLabel, centered = false }) {
+  const { t } = useTranslation();
+  const label = viewAllLabel || t('home.viewAllSinks');
   return (
     <div className={cn('mb-5', centered ? 'text-center' : 'flex items-end justify-between gap-4')}>
       <div>
@@ -93,7 +95,7 @@ function SectionHead({ eyebrow, title, to, viewAllLabel = 'View All Sinks', cent
           to={to}
           className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-foreground/70 transition-colors hover:text-[color:var(--copper)]"
         >
-          {viewAllLabel} <ArrowRight className="size-3.5" />
+          {label} <ArrowRight className="size-3.5" />
         </Link>
       )}
     </div>
@@ -139,18 +141,19 @@ function Stars({ rating = 5 }) {
 // ── Sections ──────────────────────────────────────────────────────────────
 
 function FeatureStrip() {
+  const { t } = useTranslation();
   return (
     <div className="glass-card mt-4 grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl px-5 py-4 sm:grid-cols-3 lg:grid-cols-5">
       {HERO_FEATURES.map((feature) => {
         const Icon = feature.icon;
         return (
-          <div key={feature.title} className="flex items-center gap-2.5">
+          <div key={feature.titleKey} className="flex items-center gap-2.5">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-foreground/15">
               <Icon className="size-[15px]" strokeWidth={1.6} />
             </span>
             <div className="min-w-0 leading-tight">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-foreground">{feature.title}</p>
-              <p className="text-[10px] text-muted-foreground">{feature.desc}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wide text-foreground">{t(feature.titleKey)}</p>
+              <p className="text-[10px] text-muted-foreground">{t(feature.descKey)}</p>
             </div>
           </div>
         );
@@ -162,26 +165,26 @@ function FeatureStrip() {
 /* Fallback hero, shown until an admin configures a banner in
    Admin → Settings → Home Banners. */
 function StaticHero() {
+  const { t } = useTranslation();
   return (
     <div className="glass relative overflow-hidden rounded-[26px] px-6 py-10 sm:px-10 lg:py-12">
       <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="relative z-10 max-w-md">
-          <p className="eyebrow">Premium Quality. Perfectly Designed.</p>
+          <p className="eyebrow">{t('home.heroKicker')}</p>
           <h1 className="display-head mt-2 text-[44px] leading-[0.92] sm:text-[58px]">
-            Perfect Sinks
+            {t('home.heroTitle')}
           </h1>
           <p className="display-head mt-1.5 text-2xl font-medium sm:text-[28px]">
-            For Every Kitchen
+            {t('home.heroSubtitle')}
           </p>
           <p className="mt-4 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
-            FELIZ kitchen sinks combine modern design, premium materials and unmatched
-            durability for the perfect kitchen experience.
+            {t('home.heroDesc')}
           </p>
           <Link
             to="/products"
             className="mt-6 inline-flex items-center gap-2.5 rounded-lg bg-[color:var(--copper)] px-6 py-3 text-[13px] font-semibold uppercase tracking-wide text-white shadow-lg shadow-[color:var(--copper)]/25 transition-colors hover:bg-[color:var(--copper-dark)]"
           >
-            Explore Sinks <ArrowRight className="size-4" />
+            {t('home.exploreSinks')} <ArrowRight className="size-4" />
           </Link>
         </div>
 
@@ -259,10 +262,10 @@ function BannerHero({ banners }) {
 
             {(banner.title || banner.subtitle) && (
               <div className="absolute inset-y-0 left-0 flex max-w-[62%] flex-col justify-center px-6 sm:px-12">
-                {banner.subtitle && <p className="eyebrow">{banner.subtitle}</p>}
+                {banner.subtitle && <p className="eyebrow">{localizedField(banner, 'subtitle')}</p>}
                 {banner.title && (
                   <h1 className="display-head mt-2 text-3xl leading-[0.95] sm:text-[46px]">
-                    {banner.title}
+                    {localizedField(banner, 'title')}
                   </h1>
                 )}
               </div>
@@ -303,14 +306,15 @@ function Hero({ banners }) {
 /* Driven by the categories admin: name, description and image all come from
    Admin → Categories. */
 function ExploreRange({ categories }) {
+  const { t } = useTranslation();
   if (!categories.length) return null;
 
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
       <div className="mb-5 text-center">
-        <p className="eyebrow">Our Sink Collection</p>
+        <p className="eyebrow">{t('home.collectionEyebrow')}</p>
         <h2 className="display-head mt-0.5 inline-block border-b-[3px] border-[color:var(--copper)] pb-1 text-2xl sm:text-[28px]">
-          Explore Our Range
+          {t('home.collectionTitle')}
         </h2>
       </div>
 
@@ -329,7 +333,7 @@ function ExploreRange({ categories }) {
                   <p className="mt-2 text-[11px] leading-snug text-muted-foreground">{category.description}</p>
                 )}
                 <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-foreground transition-colors group-hover:text-[color:var(--copper)]">
-                  Shop Now <ArrowRight className="size-3" />
+                  {t('common.shopNow')} <ArrowRight className="size-3" />
                 </span>
               </div>
               <ImageSlot src={category.image} alt={label} className="aspect-[4/3] rounded-xl" />
@@ -443,7 +447,10 @@ function ProductRail({ eyebrow, title, products, loading, badge = 'heart' }) {
 }
 
 function BuiltForExcellence({ cards }) {
-  const items = cards.length ? cards : EXCELLENCE_FALLBACK;
+  const { t } = useTranslation();
+  const items = cards.length
+    ? cards
+    : EXCELLENCE_FALLBACK.map((c) => ({ icon: c.icon, title: t(c.titleKey), subtitle: t(c.subtitleKey) }));
 
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
@@ -453,8 +460,8 @@ function BuiltForExcellence({ cards }) {
           aspect-ratio height. */}
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
         <div className="flex flex-col">
-          <p className="eyebrow">Why Choose Feliz?</p>
-          <h2 className="display-head mt-0.5 text-2xl sm:text-[28px]">Built For Excellence</h2>
+          <p className="eyebrow">{t('home.excellenceEyebrow')}</p>
+          <h2 className="display-head mt-0.5 text-2xl sm:text-[28px]">{t('home.excellenceTitle')}</h2>
 
           {/* Column count is fixed at 5 so fewer cards keep their width and the
               video stays on the right — they simply leave trailing columns
@@ -467,9 +474,9 @@ function BuiltForExcellence({ cards }) {
                   <span className="flex size-9 items-center justify-center rounded-full border border-foreground/15">
                     <Icon className="size-4" strokeWidth={1.6} />
                   </span>
-                  <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{item.title}</h3>
+                  <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{localizedField(item, 'title')}</h3>
                   {item.subtitle && (
-                    <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{item.subtitle}</p>
+                    <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{localizedField(item, 'subtitle')}</p>
                   )}
                 </div>
               );
@@ -484,8 +491,8 @@ function BuiltForExcellence({ cards }) {
             <Play className="ml-0.5 size-4 fill-foreground text-foreground" />
           </span>
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-4 text-center text-white">
-            <p className="text-[11px] font-bold uppercase tracking-wide">Crafted To Perfection</p>
-            <p className="mt-0.5 text-[10px] text-white/80">Designed for modern kitchens that inspire.</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide">{t('home.craftedTitle')}</p>
+            <p className="mt-0.5 text-[10px] text-white/80">{t('home.craftedDesc')}</p>
           </div>
         </div>
       </div>
@@ -516,10 +523,10 @@ function MidBanners({ banners }) {
             <div className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)]">
               <div className="glass-card flex flex-col justify-center rounded-2xl p-6">
                 {section.title && (
-                  <h2 className="display-head text-xl leading-tight sm:text-2xl">{section.title}</h2>
+                  <h2 className="display-head text-xl leading-tight sm:text-2xl">{localizedField(section, 'title')}</h2>
                 )}
                 {section.subtitle && (
-                  <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">{section.subtitle}</p>
+                  <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">{localizedField(section, 'subtitle')}</p>
                 )}
               </div>
 
@@ -529,8 +536,8 @@ function MidBanners({ banners }) {
                     <ImageSlot src={card.image} mobileSrc={card.mobileImage} alt={card.title} className="aspect-[4/5]" />
                     {(card.title || card.subtitle) && (
                       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-4 text-white">
-                        {card.title && <p className="text-[10px] font-bold uppercase tracking-wide">{card.title}</p>}
-                        {card.subtitle && <p className="mt-1 text-[10px] leading-snug text-white/80">{card.subtitle}</p>}
+                        {card.title && <p className="text-[10px] font-bold uppercase tracking-wide">{localizedField(card, 'title')}</p>}
+                        {card.subtitle && <p className="mt-1 text-[10px] leading-snug text-white/80">{localizedField(card, 'subtitle')}</p>}
                       </div>
                     )}
                   </div>
@@ -547,6 +554,7 @@ function MidBanners({ banners }) {
 /* Real customer reviews (latest positive ones across all products), fetched
    from /reviews/recent. Falls back to static testimonials when none exist. */
 function HappyHomes({ reviews }) {
+  const { t } = useTranslation();
   const railRef = useRef(null);
   const scrollBy = (dir) => railRef.current?.scrollBy({ left: dir * 320, behavior: 'smooth' });
 
@@ -556,7 +564,7 @@ function HappyHomes({ reviews }) {
 
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
-      <SectionHead eyebrow="What Our Customers Say" title="Happy Homes" to="/products" viewAllLabel="View All Reviews" />
+      <SectionHead eyebrow={t('home.reviewsEyebrow')} title={t('home.reviewsTitle')} to="/products" viewAllLabel={t('home.viewAllReviews')} />
 
       <div className="relative">
         <button
@@ -598,17 +606,18 @@ function HappyHomes({ reviews }) {
 }
 
 function TrustBar() {
+  const { t } = useTranslation();
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
       <div className="glass grid grid-cols-2 gap-4 rounded-2xl px-6 py-4 sm:grid-cols-4">
         {TRUST_BAR.map((item) => {
           const Icon = item.icon;
           return (
-            <div key={item.title} className="flex items-center justify-center gap-2.5">
+            <div key={item.titleKey} className="flex items-center justify-center gap-2.5">
               <Icon className="size-4 shrink-0" strokeWidth={1.6} />
               <div className="leading-tight">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-foreground">{item.title}</p>
-                <p className="text-[10px] text-muted-foreground">{item.desc}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-foreground">{t(item.titleKey)}</p>
+                <p className="text-[10px] text-muted-foreground">{t(item.descKey)}</p>
               </div>
             </div>
           );
@@ -679,8 +688,8 @@ export default function Home() {
       <ExploreRange categories={categories} />
 
       <ProductRail
-        eyebrow="Our Best Selling Sinks"
-        title="Best Sellers"
+        eyebrow={t('home.bestSellersEyebrow')}
+        title={t('home.bestSellersTitle')}
         products={featured}
         loading={loading}
       />
@@ -690,8 +699,8 @@ export default function Home() {
       <HappyHomes reviews={reviews} />
 
       <ProductRail
-        eyebrow="Shop Best Selling Sinks"
-        title="Top Picks For You"
+        eyebrow={t('home.topPicksEyebrow')}
+        title={t('home.topPicksTitle')}
         products={topPicks}
         loading={loading}
         badge="none"

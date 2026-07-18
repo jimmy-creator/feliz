@@ -179,18 +179,22 @@ const seed = async () => {
     // Announcement bar messages (editable later in Admin → Settings).
     await Setting.upsert({
       key: 'announcements',
-      value: JSON.stringify(['New arrivals live now', 'Free shipping all over India', 'Easy 7-day returns']),
+      value: JSON.stringify([
+        { text: 'New arrivals live now', textAr: 'وصل حديثًا الآن' },
+        { text: 'Free shipping across Oman', textAr: 'شحن مجاني في جميع أنحاء عُمان' },
+        { text: 'Easy 7-day returns', textAr: 'إرجاع سهل خلال 7 أيام' },
+      ]),
     });
 
     // "Built For Excellence" cards (editable later in Admin → Settings → Theme).
     await Setting.upsert({
       key: 'excellence',
       value: JSON.stringify([
-        { title: 'Premium Quality', subtitle: 'Crafted with high grade materials', icon: 'shield' },
-        { title: '10 Year Warranty', subtitle: 'Long lasting performance you can trust', icon: 'badge' },
-        { title: 'Heat & Scratch Resistant', subtitle: 'Built to withstand everyday use', icon: 'flame' },
-        { title: 'Free Shipping', subtitle: 'Across india on all orders', icon: 'truck' },
-        { title: 'Easy Returns', subtitle: 'Hassle free returns within 7 days', icon: 'returns' },
+        { title: 'Premium Quality', titleAr: 'جودة عالية', subtitle: 'Crafted with high grade materials', subtitleAr: 'مصنوع من مواد عالية الجودة', icon: 'shield' },
+        { title: '10 Year Warranty', titleAr: 'ضمان 10 سنوات', subtitle: 'Long lasting performance you can trust', subtitleAr: 'أداء طويل الأمد يمكنك الوثوق به', icon: 'badge' },
+        { title: 'Heat & Scratch Resistant', titleAr: 'مقاوم للحرارة والخدش', subtitle: 'Built to withstand everyday use', subtitleAr: 'مصمم لتحمّل الاستخدام اليومي', icon: 'flame' },
+        { title: 'Free Shipping', titleAr: 'شحن مجاني', subtitle: 'On all orders', subtitleAr: 'على جميع الطلبات', icon: 'truck' },
+        { title: 'Easy Returns', titleAr: 'إرجاع سهل', subtitle: 'Hassle free returns within 7 days', subtitleAr: 'إرجاع دون متاعب خلال 7 أيام', icon: 'returns' },
       ]),
     });
 
@@ -202,20 +206,24 @@ const seed = async () => {
       value: JSON.stringify([
         {
           title: 'Designed For Modern Kitchens',
+          titleAr: 'مصمم لمطابخ عصرية',
           subtitle: 'FELIZ sinks are where innovation meets style. Made with advanced quartz technology and crafted for durability, they bring elegance and functionality to your everyday kitchen life.',
+          subtitleAr: 'أحواض فيليز حيث يلتقي الابتكار بالأناقة. مصنوعة بتقنية الكوارتز المتقدمة ومصمّمة للمتانة، لتضفي الأناقة والعملية على حياتك اليومية في المطبخ.',
           cards: [
-            { image: '', mobileImage: '', title: 'Performance That Lasts', subtitle: 'Built for daily use with superior strength and durability.' },
-            { image: '', mobileImage: '', title: 'Elegance In Every Detail', subtitle: "Modern designs that elevate your kitchen's look." },
-            { image: '', mobileImage: '', title: 'Easy To Clean', subtitle: 'Smooth surfaces for effortless cleaning and hygiene.' },
+            { image: '', mobileImage: '', title: 'Performance That Lasts', titleAr: 'أداء يدوم', subtitle: 'Built for daily use with superior strength and durability.', subtitleAr: 'مصمم للاستخدام اليومي بقوة ومتانة فائقة.' },
+            { image: '', mobileImage: '', title: 'Elegance In Every Detail', titleAr: 'أناقة في كل التفاصيل', subtitle: "Modern designs that elevate your kitchen's look.", subtitleAr: 'تصاميم عصرية ترتقي بمظهر مطبخك.' },
+            { image: '', mobileImage: '', title: 'Easy To Clean', titleAr: 'سهل التنظيف', subtitle: 'Smooth surfaces for effortless cleaning and hygiene.', subtitleAr: 'أسطح ناعمة لتنظيف سهل ونظافة تامة.' },
           ],
         },
         {
           title: 'Superior Materials. Timeless Quality.',
+          titleAr: 'مواد فائقة. جودة خالدة.',
           subtitle: '',
+          subtitleAr: '',
           cards: [
-            { image: '', mobileImage: '', title: 'Quartz', subtitle: 'Strong. Durable. Beautiful.' },
-            { image: '', mobileImage: '', title: 'Granite', subtitle: 'Naturally Tough. Heat Resistant.' },
-            { image: '', mobileImage: '', title: 'Ceramic', subtitle: 'Glossier Finish. Easy to Clean.' },
+            { image: '', mobileImage: '', title: 'Quartz', titleAr: 'كوارتز', subtitle: 'Strong. Durable. Beautiful.', subtitleAr: 'قوي. متين. جميل.' },
+            { image: '', mobileImage: '', title: 'Granite', titleAr: 'جرانيت', subtitle: 'Naturally Tough. Heat Resistant.', subtitleAr: 'صلابة طبيعية. مقاوم للحرارة.' },
+            { image: '', mobileImage: '', title: 'Ceramic', titleAr: 'سيراميك', subtitle: 'Glossier Finish. Easy to Clean.', subtitleAr: 'لمعان أنيق. سهل التنظيف.' },
           ],
         },
       ]),

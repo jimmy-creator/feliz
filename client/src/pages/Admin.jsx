@@ -287,7 +287,7 @@ function BannerEditor({
       const { data } = await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      const newBanner = { image: data.url, mobileImage: '', title: '', subtitle: '', link: '/products' };
+      const newBanner = { image: data.url, mobileImage: '', title: '', titleAr: '', subtitle: '', subtitleAr: '', link: '/products' };
       const updated = [...banners, newBanner];
       await saveBanners(updated);
     } catch (err) {
@@ -381,10 +381,26 @@ function BannerEditor({
                 style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.88rem', background: 'var(--bg-warm)' }}
               />
               <input
+                value={banner.titleAr || ''}
+                onChange={(e) => updateBanner(i, 'titleAr', e.target.value)}
+                onBlur={() => saveBanners(banners)}
+                placeholder="عنوان (اختياري بالعربية)"
+                dir="rtl"
+                style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.88rem', background: 'var(--bg-warm)' }}
+              />
+              <input
                 value={banner.subtitle || ''}
                 onChange={(e) => updateBanner(i, 'subtitle', e.target.value)}
                 onBlur={() => saveBanners(banners)}
                 placeholder="Subtitle (e.g. Kids Collection)"
+                style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.82rem', background: 'var(--bg-warm)' }}
+              />
+              <input
+                value={banner.subtitleAr || ''}
+                onChange={(e) => updateBanner(i, 'subtitleAr', e.target.value)}
+                onBlur={() => saveBanners(banners)}
+                placeholder="العنوان الفرعي (اختياري بالعربية)"
+                dir="rtl"
                 style={{ padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.82rem', background: 'var(--bg-warm)' }}
               />
               <input
@@ -500,7 +516,7 @@ function MidBannerEditor() {
 
   const addSection = () => {
     if (sections.length >= MAX_MID_SECTIONS) return;
-    save([...sections, { title: '', subtitle: '', cards: [] }]);
+    save([...sections, { title: '', titleAr: '', subtitle: '', subtitleAr: '', cards: [] }]);
   };
   const removeSection = (si) => save(sections.filter((_, i) => i !== si));
   const moveSection = (si, dir) => {
@@ -513,7 +529,7 @@ function MidBannerEditor() {
 
   const addCard = (si) => {
     save(sections.map((s, i) => (i === si && (s.cards?.length || 0) < MAX_MID_CARDS)
-      ? { ...s, cards: [...(s.cards || []), { image: '', mobileImage: '', title: '', subtitle: '' }] }
+      ? { ...s, cards: [...(s.cards || []), { image: '', mobileImage: '', title: '', titleAr: '', subtitle: '', subtitleAr: '' }] }
       : s));
   };
   const removeCard = (si, ci) => {
@@ -567,12 +583,29 @@ function MidBannerEditor() {
                 placeholder="Section title (e.g. Designed For Modern Kitchens)"
                 style={{ ...inputStyle, fontSize: '0.9rem', fontWeight: 600 }}
               />
+              <input
+                value={section.titleAr || ''}
+                onChange={(e) => updateSection(si, 'titleAr', e.target.value)}
+                onBlur={() => save(sections)}
+                placeholder="عنوان القسم (اختياري بالعربية)"
+                dir="rtl"
+                style={{ ...inputStyle, fontSize: '0.9rem', fontWeight: 600 }}
+              />
               <textarea
                 value={section.subtitle || ''}
                 onChange={(e) => updateSection(si, 'subtitle', e.target.value)}
                 onBlur={() => save(sections)}
                 rows={2}
                 placeholder="Description (optional)"
+                style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
+              />
+              <textarea
+                value={section.subtitleAr || ''}
+                onChange={(e) => updateSection(si, 'subtitleAr', e.target.value)}
+                onBlur={() => save(sections)}
+                rows={2}
+                placeholder="الوصف (اختياري بالعربية)"
+                dir="rtl"
                 style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
               />
             </div>
@@ -601,10 +634,26 @@ function MidBannerEditor() {
                       style={inputStyle}
                     />
                     <input
+                      value={card.titleAr || ''}
+                      onChange={(e) => updateCard(si, ci, 'titleAr', e.target.value)}
+                      onBlur={() => save(sections)}
+                      placeholder="عنوان البطاقة (اختياري بالعربية)"
+                      dir="rtl"
+                      style={inputStyle}
+                    />
+                    <input
                       value={card.subtitle || ''}
                       onChange={(e) => updateCard(si, ci, 'subtitle', e.target.value)}
                       onBlur={() => save(sections)}
                       placeholder="Card subtitle (e.g. Built for daily use.)"
+                      style={inputStyle}
+                    />
+                    <input
+                      value={card.subtitleAr || ''}
+                      onChange={(e) => updateCard(si, ci, 'subtitleAr', e.target.value)}
+                      onBlur={() => save(sections)}
+                      placeholder="العنوان الفرعي (اختياري بالعربية)"
+                      dir="rtl"
                       style={inputStyle}
                     />
                   </div>
@@ -810,13 +859,17 @@ function B2BBankDetailsEditor() {
   );
 }
 
+// Announcement bar items — each is { text, textAr }. Legacy plain strings are
+// normalised to objects on load. textAr is optional and shown in Arabic mode.
 function AnnouncementEditor() {
   const [items, setItems] = useState([]);
-  const [draft, setDraft] = useState('');
 
   useEffect(() => {
     api.get('/settings/announcements')
-      .then((res) => setItems(Array.isArray(res.data) ? res.data : []))
+      .then((res) => {
+        const list = Array.isArray(res.data) ? res.data : [];
+        setItems(list.map((it) => (typeof it === 'string' ? { text: it, textAr: '' } : { text: it.text || '', textAr: it.textAr || '' })));
+      })
       .catch(() => {});
   }, []);
 
@@ -830,12 +883,14 @@ function AnnouncementEditor() {
     }
   };
 
-  const add = () => {
-    const v = draft.trim();
-    if (!v || items.length >= 10) return;
-    save([...items, v]);
-    setDraft('');
+  const update = (i, field, value) => {
+    setItems(items.map((it, j) => (j === i ? { ...it, [field]: value } : it)));
   };
+  const addItem = () => {
+    if (items.length >= 10) return;
+    save([...items, { text: '', textAr: '' }]);
+  };
+  const remove = (i) => save(items.filter((_, j) => j !== i));
 
   return (
     <div style={{ marginTop: '3rem' }}>
@@ -843,16 +898,30 @@ function AnnouncementEditor() {
         Announcement Bar ({items.length}/10)
       </h3>
       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
-        Short promo strings that scroll across the top of every page (above the navbar). Up to 10 messages.
+        Short promo strings that scroll across the top of every page (above the navbar). Up to 10 messages. The Arabic field is optional — shown when the store is in Arabic.
       </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
-        {items.map((s, i) => (
-          <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg-warm)' }}>
-            <span style={{ flex: 1, fontSize: '0.88rem' }}>{s}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
+        {items.map((it, i) => (
+          <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', padding: '0.6rem 0.85rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg-card)' }}>
+            <input
+              value={it.text}
+              onChange={(e) => update(i, 'text', e.target.value)}
+              onBlur={() => save(items)}
+              placeholder='e.g. "Free shipping on orders over 500"'
+              style={{ flex: 1, padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.85rem', background: 'var(--bg-warm)' }}
+            />
+            <input
+              value={it.textAr}
+              onChange={(e) => update(i, 'textAr', e.target.value)}
+              onBlur={() => save(items)}
+              placeholder="نص إعلان (اختياري بالعربية)"
+              dir="rtl"
+              style={{ flex: 1, padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.85rem', background: 'var(--bg-warm)' }}
+            />
             <button
               type="button"
-              onClick={() => save(items.filter((_, j) => j !== i))}
+              onClick={() => remove(i)}
               style={{ padding: '0.3rem 0.6rem', border: '1px solid var(--danger)', borderRadius: 'var(--radius)', background: 'transparent', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.75rem' }}
             >
               <HiTrash />
@@ -861,19 +930,11 @@ function AnnouncementEditor() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
-          placeholder='e.g. "Free shipping on orders over 500"'
-          disabled={items.length >= 10}
-          style={{ flex: 1, padding: '0.6rem 0.85rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.88rem', background: 'var(--bg-warm)' }}
-        />
-        <button type="button" onClick={add} disabled={!draft.trim() || items.length >= 10} className="btn btn-secondary">
-          <HiPlus /> Add
+      {items.length < 10 && (
+        <button type="button" onClick={addItem} className="btn btn-secondary">
+          <HiPlus /> Add Announcement
         </button>
-      </div>
+      )}
     </div>
   );
 }
@@ -900,7 +961,7 @@ function ExcellenceEditor() {
 
   const add = () => {
     if (cards.length >= MAX_EXCELLENCE) return;
-    setCards((prev) => [...prev, { title: '', subtitle: '', icon: 'shield' }]);
+    setCards((prev) => [...prev, { title: '', titleAr: '', subtitle: '', subtitleAr: '', icon: 'shield' }]);
     setDirty(true);
   };
 
@@ -946,7 +1007,9 @@ function ExcellenceEditor() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <Input value={card.title || ''} onChange={(e) => update(i, 'title', e.target.value)} placeholder="Title, e.g. Premium Quality" />
+              <Input value={card.titleAr || ''} onChange={(e) => update(i, 'titleAr', e.target.value)} placeholder="العنوان (اختياري بالعربية)" dir="rtl" />
               <Input value={card.subtitle || ''} onChange={(e) => update(i, 'subtitle', e.target.value)} placeholder="Subtitle, e.g. Crafted with high grade materials" />
+              <Input value={card.subtitleAr || ''} onChange={(e) => update(i, 'subtitleAr', e.target.value)} placeholder="العنوان الفرعي (اختياري بالعربية)" dir="rtl" />
             </div>
             <button
               type="button"

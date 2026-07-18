@@ -14,6 +14,7 @@ import api from '../../api/axios';
 import ScrollToTopButton from '../../components/ScrollToTopButton';
 import ProductImage from '../../components/ProductImage';
 import { CURRENCY, formatPrice } from '../../utils/currency';
+import { localizedField } from '../../utils/i18nHelpers';
 import {
   Sheet,
   SheetContent,
@@ -42,11 +43,11 @@ function announcementIcon(text = '') {
   return Sparkles;
 }
 
-// Main nav — exact labels from the design.
+// Main nav — labels are i18n keys resolved at render.
 const NAV_LINKS = [
-  { to: '/', label: 'Home' },
-  { to: '/products', label: 'All Sinks' },
-  { to: '/about', label: 'About Us' },
+  { to: '/', labelKey: 'common.home' },
+  { to: '/products', labelKey: 'common.allSinks' },
+  { to: '/about', labelKey: 'common.aboutUs' },
 ];
 
 // Icon + label stack used by the Search / Wishlist / Cart actions. Declared at
@@ -196,12 +197,12 @@ export default function Navbar() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           onKeyDown={onSearchKeyDown}
-          placeholder="Search sinks, materials, accessories…"
+          placeholder={t('nav.searchPlaceholder')}
           className="min-w-0 flex-1 bg-transparent px-5 text-base text-foreground outline-none placeholder:text-muted-foreground md:text-sm [&::-webkit-search-cancel-button]:appearance-none"
         />
         <button
           type="submit"
-          aria-label="Search"
+          aria-label={t('common.search')}
           className="flex shrink-0 items-center justify-center bg-[color:var(--copper)] px-5 text-white transition-colors hover:bg-[color:var(--copper-dark)]"
         >
           <Search className="size-4" />
@@ -237,7 +238,7 @@ export default function Navbar() {
             className="block w-full border-t border-white/60 px-3 py-2.5 text-center text-sm font-semibold text-[color:var(--copper)] hover:bg-white/50"
             onClick={handleSearch}
           >
-            View all results for &ldquo;{query}&rdquo;
+            {t('nav.viewAllResults', { query })}
           </button>
         </div>
       )}
@@ -255,10 +256,12 @@ export default function Navbar() {
             {/* Left: admin announcements. Overflow is clipped rather than
                 wrapping, so a long list can't push the links off the bar. */}
             <div className="flex min-w-0 flex-1 items-center gap-7 overflow-hidden">
-              {announcements.map((text) => {
+              {announcements.map((item, i) => {
+                const text = typeof item === 'string' ? item : localizedField(item, 'text');
+                if (!text) return null;
                 const Icon = announcementIcon(text);
                 return (
-                  <span key={text} className="flex shrink-0 items-center gap-1.5">
+                  <span key={i} className="flex shrink-0 items-center gap-1.5">
                     <Icon className="size-[13px]" strokeWidth={1.8} />
                     {text}
                   </span>
@@ -268,10 +271,10 @@ export default function Navbar() {
             <div className="flex shrink-0 items-center gap-7">
               <LanguageSwitcher compact />
               <Link to="/orders" className="flex items-center gap-1.5 transition-colors hover:text-foreground">
-                <PackageSearch className="size-[13px]" strokeWidth={1.8} /> Track Order
+                <PackageSearch className="size-[13px]" strokeWidth={1.8} /> {t('common.trackOrder')}
               </Link>
               <Link to="/contact" className="flex items-center gap-1.5 transition-colors hover:text-foreground">
-                <Headset className="size-[13px]" strokeWidth={1.8} /> Support
+                <Headset className="size-[13px]" strokeWidth={1.8} /> {t('common.support')}
               </Link>
             </div>
           </div>
@@ -302,9 +305,9 @@ export default function Navbar() {
 
             {/* Desktop nav links */}
             <div className="ml-auto hidden items-center gap-8 lg:flex">
-              {NAV_LINKS.map(({ to, label }) => (
+              {NAV_LINKS.map(({ to, labelKey }) => (
                 <Link
-                  key={label}
+                  key={labelKey}
                   to={to}
                   onClick={to === '/' ? scrollTopIfHome : undefined}
                   className={cn(
@@ -312,7 +315,7 @@ export default function Navbar() {
                     isActive(to) ? 'text-foreground' : 'text-foreground/70 hover:text-foreground',
                   )}
                 >
-                  {label}
+                  {t(labelKey)}
                   {isActive(to) && (
                     <span className="absolute -bottom-1 left-0 h-[2px] w-full rounded-full bg-[color:var(--copper)]" />
                   )}
@@ -325,31 +328,31 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setShowSearch((s) => !s)}
-                aria-label="Search"
+                aria-label={t('common.search')}
                 aria-expanded={showSearch}
                 className={cn('transition-colors hover:text-[color:var(--copper)]', showSearch && 'text-[color:var(--copper)]')}
               >
-                <ActionItem icon={showSearch ? X : Search} label="Search" />
+                <ActionItem icon={showSearch ? X : Search} label={t('common.search')} />
               </button>
 
               <Link
                 to="/wishlist"
-                aria-label="Wishlist"
+                aria-label={t('common.wishlist')}
                 className="hidden transition-colors hover:text-[color:var(--copper)] sm:block"
               >
-                <ActionItem icon={Heart} label="Wishlist" count={wishlistCount} />
+                <ActionItem icon={Heart} label={t('common.wishlist')} count={wishlistCount} />
               </Link>
 
-              <Link to="/cart" aria-label="Cart" className="transition-colors hover:text-[color:var(--copper)]">
-                <ActionItem icon={ShoppingCart} label="Cart" count={cartCount} />
+              <Link to="/cart" aria-label={t('common.cart')} className="transition-colors hover:text-[color:var(--copper)]">
+                <ActionItem icon={ShoppingCart} label={t('common.cart')} count={cartCount} />
               </Link>
 
               <Link
                 to={user ? '/profile' : '/login'}
-                aria-label={user ? 'Account' : 'Sign in'}
+                aria-label={user ? t('common.account') : t('common.signIn')}
                 className="hidden transition-colors hover:text-[color:var(--copper)] lg:block"
               >
-                <ActionItem icon={User} label={user ? 'Account' : 'Sign In'} />
+                <ActionItem icon={User} label={user ? t('common.account') : t('common.signIn')} />
               </Link>
             </div>
           </nav>
@@ -371,25 +374,25 @@ export default function Navbar() {
           </SheetHeader>
 
           <nav className="flex flex-col p-2">
-            {NAV_LINKS.map(({ to, label }) => (
+            {NAV_LINKS.map(({ to, labelKey }) => (
               <Link
-                key={label}
+                key={labelKey}
                 to={to}
                 onClick={() => setShowMobileMenu(false)}
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-white/60"
               >
-                {label}
+                {t(labelKey)}
               </Link>
             ))}
           </nav>
 
           <div className="border-t border-border-light p-2">
             {[
-              { to: '/', icon: Home, label: 'Home' },
-              { to: '/products', icon: LayoutGrid, label: 'All Sinks' },
-              { to: '/wishlist', icon: Heart, label: 'Wishlist', count: wishlistCount },
-              { to: '/cart', icon: ShoppingCart, label: 'Cart', count: cartCount },
-              { to: user ? '/profile' : '/login', icon: User, label: user ? 'Account' : 'Sign In' },
+              { to: '/', icon: Home, label: t('common.home') },
+              { to: '/products', icon: LayoutGrid, label: t('common.allSinks') },
+              { to: '/wishlist', icon: Heart, label: t('common.wishlist'), count: wishlistCount },
+              { to: '/cart', icon: ShoppingCart, label: t('common.cart'), count: cartCount },
+              { to: user ? '/profile' : '/login', icon: User, label: user ? t('common.account') : t('common.signIn') },
             ].map((item) => {
               const Icon = item.icon;
               return (
