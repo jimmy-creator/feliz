@@ -9,7 +9,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>Where We Deliver</h2>
         <p>
-          We deliver across Qatar. Within Doha we can usually arrange same-day or next-day delivery; other areas take a day or two longer.
+          We deliver across Oman. Within Muscat we can usually arrange same-day or next-day delivery; other areas take a day or two longer.
         </p>
       </section>
 
@@ -30,9 +30,9 @@ function EnglishBody() {
             </tr>
           </thead>
           <tbody>
-            <tr><td>Doha</td><td>Same day – 1 business day</td></tr>
-            <tr><td>Al Rayyan, Al Wakrah, Lusail, Umm Salal</td><td>1–2 business days</td></tr>
-            <tr><td>Al Khor, Al Daayen, Mesaieed, Al Shamal</td><td>2–3 business days</td></tr>
+            <tr><td>Muscat</td><td>Same day – 1 business day</td></tr>
+            <tr><td>Barka, Seeb, Sohar, Nizwa</td><td>1–2 business days</td></tr>
+            <tr><td>Salalah, Sur, Ibri, Al Buraimi</td><td>2–3 business days</td></tr>
           </tbody>
         </table>
       </section>
@@ -77,7 +77,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>8. International Shipping</h2>
         <p>
-          We currently ship within Qatar only. For GCC or international orders, drop us a line and we can arrange on a case-by-case basis.
+          We currently ship within Oman only. For GCC or international orders, drop us a line and we can arrange on a case-by-case basis.
         </p>
       </section>
 
@@ -100,7 +100,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>أين نوصِّل</h2>
         <p>
-          نقوم بالتوصيل في جميع أنحاء دولة قطر. داخل الدوحة يمكننا عادةً ترتيب التوصيل في نفس اليوم أو اليوم التالي؛ أما المناطق الأخرى فتستغرق يومًا أو يومين إضافيَّين.
+          نقوم بالتوصيل في جميع أنحاء سلطنة عُمان. داخل مسقط يمكننا عادةً ترتيب التوصيل في نفس اليوم أو اليوم التالي؛ أما المناطق الأخرى فتستغرق يومًا أو يومين إضافيَّين.
         </p>
       </section>
 
@@ -121,9 +121,9 @@ function ArabicBody() {
             </tr>
           </thead>
           <tbody>
-            <tr><td>الدوحة</td><td>نفس اليوم – يوم عمل واحد</td></tr>
-            <tr><td>الريان، الوكرة، لوسيل، أم صلال</td><td>1–2 يوم عمل</td></tr>
-            <tr><td>الخور، الظعاين، مسيعيد، الشمال</td><td>2–3 أيام عمل</td></tr>
+            <tr><td>مسقط</td><td>نفس اليوم – يوم عمل واحد</td></tr>
+            <tr><td>بركاء، السيب، صحار، نزوى</td><td>1–2 يوم عمل</td></tr>
+            <tr><td>صلالة، صور، عبري، البريمي</td><td>2–3 أيام عمل</td></tr>
           </tbody>
         </table>
       </section>
@@ -168,7 +168,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>8. الشحن الدولي</h2>
         <p>
-          نقوم حاليًا بالشحن داخل دولة قطر فقط. للطلبات الخليجية أو الدولية، يرجى التواصل معنا وسنرتّبها وفق كل حالة.
+          نقوم حاليًا بالشحن داخل سلطنة عُمان فقط. للطلبات الخليجية أو الدولية، يرجى التواصل معنا وسنرتّبها وفق كل حالة.
         </p>
       </section>
 
@@ -190,8 +190,8 @@ export default function ShippingPolicy() {
     <StaticPage
       title="Shipping Policy"
       titleAr="سياسة الشحن"
-      description="Elegant Bayt delivery across Qatar. Free over a minimum order, fast delivery to most areas."
-      descriptionAr="توصيل Elegant Bayt في جميع أنحاء قطر. توصيل مجاني فوق الحد الأدنى للطلب، وتوصيل سريع لمعظم المناطق."
+      description="FELIZ delivery across Oman. Free over a minimum order, fast delivery to most areas."
+      descriptionAr="توصيل فيليز في جميع أنحاء سلطنة عُمان. توصيل مجاني فوق الحد الأدنى للطلب، وتوصيل سريع لمعظم المناطق."
     >
       {isAr ? <ArabicBody /> : <EnglishBody />}
     </StaticPage>

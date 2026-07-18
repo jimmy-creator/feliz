@@ -9,7 +9,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>1. Who We Are</h2>
         <p>
-          This Privacy Policy is issued by <strong>Elegant Bayt</strong>, operating the brand <strong>Elegant Bayt</strong>, with its registered office at Barka Sanaya, Sultanate of Oman ("Elegant Bayt", "we", "us"). It explains how we collect and handle personal information when you visit our website or place an order with us.
+          This Privacy Policy is issued by <strong>FELIZ</strong>, operating the brand <strong>FELIZ</strong>, with its registered office at Barka Sanaya, Sultanate of Oman ("فيليز", "we", "us"). It explains how we collect and handle personal information when you visit our website or place an order with us.
         </p>
       </section>
 
@@ -32,7 +32,7 @@ function EnglishBody() {
           <li>To respond to your enquiries and provide customer support.</li>
           <li>To send promotional emails only where you have opted in.</li>
           <li>To improve our website, packaging, and product range.</li>
-          <li>To comply with applicable Qatar laws and respond to lawful requests.</li>
+          <li>To comply with applicable Oman laws and respond to lawful requests.</li>
         </ul>
       </section>
 
@@ -43,14 +43,14 @@ function EnglishBody() {
           <li><strong>Payment processors:</strong> Our payment gateway partners, for secure payment handling.</li>
           <li><strong>Logistics partners:</strong> Courier and shipping providers that deliver your order.</li>
           <li><strong>Service providers:</strong> Email, hosting, and analytics vendors operating on our behalf under appropriate confidentiality terms.</li>
-          <li><strong>Legal authorities:</strong> When required by Qatar law, court order, or to protect our rights.</li>
+          <li><strong>Legal authorities:</strong> When required by Oman law, court order, or to protect our rights.</li>
         </ul>
       </section>
 
       <section className="s2-static-section">
         <h2>5. Data Retention</h2>
         <p>
-          We retain your personal data only for as long as needed to provide our services, comply with tax and accounting obligations under Qatar law, and resolve disputes. You may request deletion of your account and associated data at any time by emailing us at <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
+          We retain your personal data only for as long as needed to provide our services, comply with tax and accounting obligations under Oman law, and resolve disputes. You may request deletion of your account and associated data at any time by emailing us at <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
         </p>
       </section>
 
@@ -62,7 +62,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>7. Your Rights</h2>
         <p>
-          Subject to Qatar law (including the applicable data protection law), you have the right to access, correct, or delete the personal data we hold about you, and to withdraw consent at any time. To exercise these rights, write to <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
+          Subject to Oman law (including the applicable data protection law), you have the right to access, correct, or delete the personal data we hold about you, and to withdraw consent at any time. To exercise these rights, write to <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
         </p>
       </section>
 
@@ -80,12 +80,12 @@ function EnglishBody() {
         <h2>10. Contact / Grievance Officer</h2>
         <p>For any privacy-related questions or to raise a grievance:</p>
         <p>
-          <strong>Elegant Bayt</strong><br />
+          <strong>FELIZ</strong><br />
           Barka Sanaya, Sultanate of Oman<br />
           Email: <a href="mailto:info@felizoman.com">info@felizoman.com</a><br />
           Phone / WhatsApp: <a href="tel:+96894103737">+968 9410 3737</a>
         </p>
-        <p>We will acknowledge complaints within 24 hours and aim to resolve them within 15 days, in line with applicable Qatar regulations.</p>
+        <p>We will acknowledge complaints within 24 hours and aim to resolve them within 15 days, in line with applicable Oman regulations.</p>
       </section>
     </>
   );
@@ -99,7 +99,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>1. من نحن</h2>
         <p>
-          صادرة هذه السياسة عن <strong>Elegant Bayt</strong>، المالكة لعلامة <strong>Elegant Bayt</strong>، ومقرّها المسجَّل في برقاء الصناعية، سلطنة عُمان ("Elegant Bayt"، "نحن"، "لدينا"). توضّح هذه السياسة كيف نقوم بجمع ومعالجة المعلومات الشخصية عند زيارتك لموقعنا الإلكتروني أو إجراء طلب لدينا.
+          صادرة هذه السياسة عن <strong>فيليز</strong>، المالكة لعلامة <strong>فيليز</strong>، ومقرّها المسجَّل في برقاء الصناعية، سلطنة عُمان ("فيليز"، "نحن"، "لدينا"). توضّح هذه السياسة كيف نقوم بجمع ومعالجة المعلومات الشخصية عند زيارتك لموقعنا الإلكتروني أو إجراء طلب لدينا.
         </p>
       </section>
 
@@ -122,7 +122,7 @@ function ArabicBody() {
           <li>للرد على استفساراتك وتقديم خدمة العملاء.</li>
           <li>لإرسال رسائل ترويجية فقط في حال موافقتك المسبقة.</li>
           <li>لتحسين موقعنا، تغليفنا، وتشكيلة منتجاتنا.</li>
-          <li>للامتثال للقوانين القطرية المعمول بها والاستجابة للطلبات القانونية.</li>
+          <li>للامتثال للقوانين العُمانية المعمول بها والاستجابة للطلبات القانونية.</li>
         </ul>
       </section>
 
@@ -133,14 +133,14 @@ function ArabicBody() {
           <li><strong>معالِجات الدفع:</strong> شركاء بوابات الدفع لدينا لمعالجة الدفع بشكل آمن.</li>
           <li><strong>شركاء التوصيل:</strong> شركات الشحن والتوصيل التي توصِّل طلبك.</li>
           <li><strong>مزوّدو الخدمات:</strong> مزوّدو البريد والاستضافة والتحليلات الذين يعملون نيابةً عنّا وفق التزامات سرّية مناسبة.</li>
-          <li><strong>الجهات القانونية:</strong> عند الاقتضاء بموجب القانون القطري أو أمر قضائي أو لحماية حقوقنا.</li>
+          <li><strong>الجهات القانونية:</strong> عند الاقتضاء بموجب القانون العُماني أو أمر قضائي أو لحماية حقوقنا.</li>
         </ul>
       </section>
 
       <section className="s2-static-section">
         <h2>5. الاحتفاظ بالبيانات</h2>
         <p>
-          نحتفظ ببياناتك الشخصية فقط طوال الفترة اللازمة لتقديم خدماتنا، والامتثال للالتزامات الضريبية والمحاسبية بموجب القانون القطري، ولحل النزاعات. يمكنك طلب حذف حسابك والبيانات المرتبطة به في أي وقت بمراسلتنا على <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
+          نحتفظ ببياناتك الشخصية فقط طوال الفترة اللازمة لتقديم خدماتنا، والامتثال للالتزامات الضريبية والمحاسبية بموجب القانون العُماني، ولحل النزاعات. يمكنك طلب حذف حسابك والبيانات المرتبطة به في أي وقت بمراسلتنا على <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
         </p>
       </section>
 
@@ -152,7 +152,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>7. حقوقك</h2>
         <p>
-          مع مراعاة القانون القطري (بما في ذلك قانون حماية البيانات المعمول به متى انطبق)، يحقّ لك الوصول إلى بياناتك الشخصية لدينا أو تصحيحها أو حذفها، وسحب موافقتك في أي وقت. لممارسة هذه الحقوق، يرجى المراسلة على <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
+          مع مراعاة القانون العُماني (بما في ذلك قانون حماية البيانات المعمول به متى انطبق)، يحقّ لك الوصول إلى بياناتك الشخصية لدينا أو تصحيحها أو حذفها، وسحب موافقتك في أي وقت. لممارسة هذه الحقوق، يرجى المراسلة على <a href="mailto:info@felizoman.com">info@felizoman.com</a>.
         </p>
       </section>
 
@@ -170,13 +170,13 @@ function ArabicBody() {
         <h2>10. التواصل / مسؤول الشكاوى</h2>
         <p>لأي أسئلة تتعلق بالخصوصية أو لتقديم شكوى:</p>
         <p>
-          <strong>Elegant Bayt</strong><br />
+          <strong>FELIZ</strong><br />
           محل رقم 03، مبنى رقم 3360، المنطقة الصناعية 17<br />
           برقاء الصناعية، سلطنة عُمان<br />
           البريد الإلكتروني: <a href="mailto:info@felizoman.com">info@felizoman.com</a><br />
           الهاتف / واتساب: <a href="tel:+96894103737">+968 9410 3737</a>
         </p>
-        <p>سنُقرّ باستلام الشكاوى خلال 24 ساعة ونسعى إلى حلّها خلال 15 يومًا، وفقًا للأنظمة القطرية المعمول بها.</p>
+        <p>سنُقرّ باستلام الشكاوى خلال 24 ساعة ونسعى إلى حلّها خلال 15 يومًا، وفقًا للأنظمة العُمانية المعمول بها.</p>
       </section>
     </>
   );
@@ -189,8 +189,8 @@ export default function PrivacyPolicy() {
     <StaticPage
       title="Privacy Policy"
       titleAr="سياسة الخصوصية"
-      description="Privacy Policy for Elegant Bayt. How we collect, use, and protect your personal information."
-      descriptionAr="سياسة الخصوصية لـ Elegant Bayt. كيف نقوم بجمع معلوماتك الشخصية واستخدامها وحمايتها."
+      description="Privacy Policy for FELIZ. How we collect, use, and protect your personal information."
+      descriptionAr="سياسة الخصوصية لـ فيليز. كيف نقوم بجمع معلوماتك الشخصية واستخدامها وحمايتها."
     >
       {isAr ? <ArabicBody /> : <EnglishBody />}
     </StaticPage>

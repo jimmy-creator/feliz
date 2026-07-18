@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
-const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'Elegant Bayt';
+const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'FELIZ';
 
 export default function ContactUs() {
   const { t } = useTranslation();

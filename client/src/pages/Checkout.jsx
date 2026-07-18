@@ -27,11 +27,11 @@ const toastStyle = {
 // payment gateway. Keep in sync with FloatingWhatsApp.jsx.
 const WHATSAPP_NUMBER = '96894103737';
 
-// The store ships within Qatar — popular cities suggested in the address combobox
+// The store ships within Oman — popular cities suggested in the address combobox
 // (customers can also type any city not listed).
-const QATAR_CITIES = [
-  'Doha', 'Al Rayyan', 'Al Wakrah', 'Al Khor', 'Al Wukair', 'Umm Salal',
-  'Al Daayen', 'Lusail', 'Mesaieed', 'Dukhan', 'Al Shamal', 'Al Shahaniya',
+const OMAN_CITIES = [
+  'Muscat', 'Muttrah', 'Seeb', 'Bawshar', 'Al Amerat', 'Qurayyat',
+  'Barka', 'Rustaq', 'Sohar', 'Nizwa', 'Salalah', 'Sur', 'Ibri', 'Al Buraimi',
 ];
 
 export default function Checkout() {
@@ -60,7 +60,7 @@ export default function Checkout() {
     address: '',
     city: '',
     state: '',
-    country: 'Qatar',
+    country: 'Oman',
     phone: user?.phone || '',
   });
 
@@ -274,15 +274,15 @@ export default function Checkout() {
                 <Input
                   id="city"
                   name="city"
-                  list="qatar-cities"
+                  list="oman-cities"
                   value={form.city}
                   onChange={(e) => setForm((f) => ({ ...f, city: e.target.value, state: e.target.value }))}
                   placeholder={t('checkout.cityPlaceholder')}
                   autoComplete="off"
                   required
                 />
-                <datalist id="qatar-cities">
-                  {QATAR_CITIES.map((c) => <option key={c} value={c} />)}
+                <datalist id="oman-cities">
+                  {OMAN_CITIES.map((c) => <option key={c} value={c} />)}
                 </datalist>
               </div>
               <div className="flex flex-col gap-2">

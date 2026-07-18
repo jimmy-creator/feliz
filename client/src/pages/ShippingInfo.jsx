@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 const FAQS = [
   { q: 'Can I change my shipping address after placing an order?', a: 'You can update your shipping address within 2 hours of placing the order by contacting our support team. Once the order is shipped, address changes cannot be made.' },
-  { q: 'Do you ship internationally?', a: "Currently, we only ship within Qatar. We're working on expanding to international shipping in the near future." },
+  { q: 'Do you ship internationally?', a: "Currently, we only ship within Oman. We're working on expanding to international shipping in the near future." },
   { q: "What happens if I'm not available to receive the delivery?", a: 'Our delivery partner will attempt delivery up to 3 times. If all attempts fail, the package will be returned to our warehouse and a refund will be initiated.' },
   { q: 'Is there a weight limit for shipping?', a: 'Standard and express shipping apply to orders up to 20kg. For heavier orders, additional charges may apply and will be displayed at checkout.' },
 ];
@@ -24,7 +24,7 @@ const faqSchema = {
 export default function ShippingInfo() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 lg:px-8">
-      <SEO title="Shipping Information" description={`Free shipping on orders over ${CURRENCY}500. Standard and express delivery across Qatar.`} />
+      <SEO title="Shipping Information" description={`Free shipping on orders over ${CURRENCY}500. Standard and express delivery across Oman.`} />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
@@ -36,7 +36,7 @@ export default function ShippingInfo() {
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { Icon: Truck, title: 'Standard Shipping', price: `${CURRENCY}49`, body: 'Delivered in 2-3 business days. Available for all orders across Qatar.' },
+          { Icon: Truck, title: 'Standard Shipping', price: `${CURRENCY}49`, body: 'Delivered in 2-3 business days. Available for all orders across Oman.' },
           { Icon: Zap, title: 'Express Shipping', price: `${CURRENCY}99`, body: 'Delivered in 1-2 business days. Get your order faster when you need it.' },
           { Icon: Package, title: 'Free Shipping', price: `${CURRENCY}0`, body: `Free standard shipping on all orders above ${CURRENCY}500. No code needed!`, highlight: true },
         ].map(({ Icon, title, price, body, highlight }) => (
@@ -54,7 +54,7 @@ export default function ShippingInfo() {
         <div className="mt-4 grid gap-6 sm:grid-cols-2">
           <div>
             <h4 className="flex items-center gap-2 font-medium"><MapPin className="size-4 text-primary" /> Domestic Shipping</h4>
-            <p className="mt-2 text-sm text-muted-foreground">We deliver across all of Qatar. Doha and nearby areas receive deliveries within 1-2 business days, while outlying areas may take 2-3 business days.</p>
+            <p className="mt-2 text-sm text-muted-foreground">We deliver across all of Oman. Muscat and nearby areas receive deliveries within 1-2 business days, while outlying areas may take 2-3 business days.</p>
           </div>
           <div>
             <h4 className="flex items-center gap-2 font-medium"><Clock className="size-4 text-primary" /> Processing Time</h4>

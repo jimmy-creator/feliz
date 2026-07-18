@@ -54,13 +54,13 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>Who We Are</h2>
         <p>
-          Elegant Bayt is a Qatar-based home store built around a simple idea: a carefully chosen
-          range of high-quality plastic home appliances — storage boxes, laundry baskets, dustbins,
-          organizers, kitchenware and more — that bring convenience and elegance to everyday living.
+          FELIZ is an Oman-based kitchen sink brand built around a simple idea: a carefully chosen
+          range of premium kitchen sinks — quartz and granite, single and double bowl, undermount
+          and coloured designs — that bring durability and elegance to every modern kitchen.
         </p>
         <p>
-          We focus on the things that matter: durable, well-made products, honest pricing, fast
-          delivery across Qatar, and support that actually helps.
+          We focus on the things that matter: strong, well-made sinks, honest pricing, fast
+          delivery across Oman, and support that actually helps.
         </p>
       </section>
 
@@ -109,13 +109,13 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>من نحن</h2>
         <p>
-          Elegant Bayt متجر منزلي مقرّه قطر، قائم على فكرة بسيطة: تشكيلة مختارة بعناية من الأدوات
-          المنزلية البلاستيكية عالية الجودة — صناديق تخزين، سلال غسيل، سلات مهملات، منظّمات،
-          أدوات مطبخ وغيرها — تضيف الراحة والأناقة إلى حياتك اليومية.
+          فيليز علامة أحواض مطبخ مقرّها سلطنة عُمان، قائمة على فكرة بسيطة: تشكيلة مختارة بعناية من
+          أحواض المطبخ الفاخرة — الكوارتز والجرانيت، الحوض المفرد والمزدوج، والتصاميم المدمجة
+          والملوّنة — تضيف المتانة والأناقة إلى كل مطبخ عصري.
         </p>
         <p>
-          نركّز على ما يهمّ فعلًا: منتجات متينة حسنة الصنع، وأسعار صادقة، وتوصيل سريع في جميع
-          أنحاء قطر، ودعم يساعدك حقًا.
+          نركّز على ما يهمّ فعلًا: أحواض متينة حسنة الصنع، وأسعار صادقة، وتوصيل سريع في جميع
+          أنحاء سلطنة عُمان، ودعم يساعدك حقًا.
         </p>
       </section>
 
@@ -163,8 +163,8 @@ export default function AboutUs() {
     <StaticPage
       title="About Us"
       titleAr="من نحن"
-      description="Elegant Bayt — premium plastic home appliances designed for durability, functionality and style, delivered across Qatar."
-      descriptionAr="Elegant Bayt — أدوات منزلية بلاستيكية فاخرة مصمّمة للمتانة والعملية والأناقة، مع توصيل في جميع أنحاء قطر."
+      description="FELIZ — premium kitchen sinks designed for durability, functionality and style, delivered across Oman."
+      descriptionAr="فيليز — أحواض مطبخ فاخرة مصمّمة للمتانة والعملية والأناقة، مع توصيل في جميع أنحاء سلطنة عُمان."
     >
       {isAr ? <ArabicBody /> : <EnglishBody />}
     </StaticPage>

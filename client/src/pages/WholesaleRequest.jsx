@@ -6,7 +6,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import SEO from '../components/SEO';
 
-const emptyAddress = { line1: '', line2: '', city: '', state: '', postalCode: '', country: 'Qatar' };
+const emptyAddress = { line1: '', line2: '', city: '', state: '', postalCode: '', country: 'Oman' };
 
 export default function WholesaleRequest() {
   const { user, loading: authLoading } = useAuth();
@@ -136,7 +136,7 @@ export default function WholesaleRequest() {
               <div className="s2-field"><label>Contact name</label>
                 <input value={contactName} onChange={(e) => setContactName(e.target.value)} required /></div>
               <div className="s2-field"><label>Phone</label>
-                <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="+91 …" /></div>
+                <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="+968 …" /></div>
             </div>
           </section>
 

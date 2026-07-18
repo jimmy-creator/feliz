@@ -66,7 +66,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>6. Contact</h2>
         <p>
-          <strong>Elegant Bayt</strong><br />
+          <strong>FELIZ</strong><br />
           📍 Barka Sanaya, Sultanate of Oman<br />
           📧 <a href="mailto:info@felizoman.com">info@felizoman.com</a><br />
           📞 / WhatsApp: <a href="tel:+96894103737">+968 9410 3737</a>
@@ -141,7 +141,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>6. التواصل</h2>
         <p>
-          <strong>Elegant Bayt</strong><br />
+          <strong>FELIZ</strong><br />
           📍 برقاء الصناعية، سلطنة عُمان<br />
           📧 <a href="mailto:info@felizoman.com">info@felizoman.com</a><br />
           📞 / واتساب: <a href="tel:+96894103737">+968 9410 3737</a>
@@ -158,8 +158,8 @@ export default function RefundPolicy() {
     <StaticPage
       title="Refund Policy"
       titleAr="سياسة استرداد المبالغ"
-      description="Elegant Bayt refund policy. Returns accepted within 14 days on unused items in original packaging."
-      descriptionAr="سياسة استرداد المبالغ لدى Elegant Bayt. نقبل الإرجاع خلال 14 يومًا للمنتجات غير المستعملة في تغليفها الأصلي."
+      description="FELIZ refund policy. Returns accepted within 14 days on unused items in original packaging."
+      descriptionAr="سياسة استرداد المبالغ لدى فيليز. نقبل الإرجاع خلال 14 يومًا للمنتجات غير المستعملة في تغليفها الأصلي."
     >
       {isAr ? <ArabicBody /> : <EnglishBody />}
     </StaticPage>

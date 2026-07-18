@@ -42,8 +42,8 @@ const store4Themes = {
   },
 
   elegantBayt: {
-    name: 'Elegant Bayt',
-    description: 'Deep navy & gold — plastic home appliances',
+    name: 'Navy & Gold',
+    description: 'Deep navy & gold — bold and premium',
     vars: {
       '--font-display': "'Plus Jakarta Sans', system-ui, sans-serif",
       '--font-body':    "'Plus Jakarta Sans', system-ui, sans-serif",
