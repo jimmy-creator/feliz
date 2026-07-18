@@ -3,9 +3,10 @@ import { Phone, Mail, MapPin } from 'lucide-react';
 
 const STORE_NAME = import.meta.env.VITE_STORE_NAME || 'FELIZ';
 
-const SUPPORT_PHONE = '+91 9688 94100344';
-const SUPPORT_EMAIL = 'support@felizsinks.com';
-const STORE_ADDRESS = 'Kochi, Kerala, India – 682001';
+const SUPPORT_PHONE = '+968 9410 3737';
+const SUPPORT_PHONE_2 = '+968 9306 0404';
+const SUPPORT_EMAIL = 'info@felizoman.com';
+const STORE_ADDRESS = 'Barka Sanaya, Sultanate of Oman';
 
 // Footer columns — labels transcribed from the approved design.
 const COLUMNS = [
@@ -116,6 +117,14 @@ export default function Footer() {
                   className="flex items-center gap-2 transition-colors hover:text-[color:var(--copper)]"
                 >
                   <Phone className="size-3.5 shrink-0" strokeWidth={1.6} /> {SUPPORT_PHONE}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`tel:${SUPPORT_PHONE_2.replace(/\s/g, '')}`}
+                  className="flex items-center gap-2 transition-colors hover:text-[color:var(--copper)]"
+                >
+                  <Phone className="size-3.5 shrink-0" strokeWidth={1.6} /> {SUPPORT_PHONE_2}
                 </a>
               </li>
               <li>

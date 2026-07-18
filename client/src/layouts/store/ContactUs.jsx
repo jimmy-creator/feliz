@@ -17,10 +17,10 @@ export default function ContactUs() {
   const [loading, setLoading] = useState(false);
 
   const contactCards = [
-    { href: 'mailto:info@elegantbayt.com', Icon: Mail, title: t('contact.emailUs'), lines: ['info@elegantbayt.com'] },
-    { href: 'tel:+97470338065', Icon: Phone, title: t('contact.callUs'), lines: ['+974 7033 8065', '+974 5534 3471'] },
-    { href: 'https://wa.me/97470338065', Icon: MessageCircle, title: t('contact.whatsapp'), lines: [t('contact.whatsappLine')] },
-    { href: 'https://www.google.com/maps/search/?api=1&query=5C6J%2BJMG%20Ar-Rayyan%20Qatar', Icon: MapPin, title: t('contact.visitUs'), lines: ['5C6J+JMG, Ar-Rayyan, Qatar'] },
+    { href: 'mailto:info@felizoman.com', Icon: Mail, title: t('contact.emailUs'), lines: ['info@felizoman.com'] },
+    { href: 'tel:+96894103737', Icon: Phone, title: t('contact.callUs'), lines: ['+968 9410 3737', '+968 9306 0404'] },
+    { href: 'https://wa.me/96894103737', Icon: MessageCircle, title: t('contact.whatsapp'), lines: [t('contact.whatsappLine')] },
+    { href: 'https://www.google.com/maps/search/?api=1&query=Barka%20Sanaya%20Sultanate%20of%20Oman', Icon: MapPin, title: t('contact.visitUs'), lines: ['Barka Sanaya, Sultanate of Oman'] },
   ];
 
   const handleSubmit = async (e) => {

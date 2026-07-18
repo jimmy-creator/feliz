@@ -128,7 +128,7 @@ export default function ReturnPolicy() {
               <AlertCircle size={20} />
               <div>
                 <h4>Need Help?</h4>
-                <p>If you have any questions about returns or refunds, contact us at <strong>support@shophub.com</strong> or call <strong>+91 9072262297</strong>. We're here to help!</p>
+                <p>If you have any questions about returns or refunds, contact us at <strong>info@felizoman.com</strong> or call <strong>+968 9410 3737</strong>. We're here to help!</p>
               </div>
             </div>
           </div>

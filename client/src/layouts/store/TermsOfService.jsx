@@ -91,9 +91,9 @@ function EnglishBody() {
         <p>For any questions regarding these terms or our services:</p>
         <p>
           <strong>Elegant Bayt</strong><br />
-          📍 5C6J+JMG, Ar-Rayyan, Qatar<br />
-          📧 <a href="mailto:info@elegantbayt.com">info@elegantbayt.com</a><br />
-          📞 / WhatsApp: <a href="tel:+97470338065">+974 7033 8065</a>
+          📍 Barka Sanaya, Sultanate of Oman<br />
+          📧 <a href="mailto:info@felizoman.com">info@felizoman.com</a><br />
+          📞 / WhatsApp: <a href="tel:+96894103737">+968 9410 3737</a>
         </p>
       </section>
     </>
@@ -190,9 +190,9 @@ function ArabicBody() {
         <p>لأي استفسارات تتعلق بهذه الشروط أو خدماتنا:</p>
         <p>
           <strong>Elegant Bayt</strong><br />
-          📍 5C6J+JMG، الريان، قطر<br />
-          📧 <a href="mailto:info@elegantbayt.com">info@elegantbayt.com</a><br />
-          📞 / واتساب: <a href="tel:+97470338065">+974 7033 8065</a>
+          📍 برقاء الصناعية، سلطنة عُمان<br />
+          📧 <a href="mailto:info@felizoman.com">info@felizoman.com</a><br />
+          📞 / واتساب: <a href="tel:+96894103737">+968 9410 3737</a>
         </p>
       </section>
     </>

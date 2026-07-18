@@ -49,7 +49,7 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>4. Click &amp; Collect</h2>
         <p>
-          Order online and pick up from our store in Ar-Rayyan, Qatar within 1–2 hours of dispatch confirmation, free of charge. You'll receive an SMS / email when it's ready.
+          Order online and pick up from our store in Barka Sanaya, Sultanate of Oman within 1–2 hours of dispatch confirmation, free of charge. You'll receive an SMS / email when it's ready.
         </p>
       </section>
 
@@ -84,8 +84,8 @@ function EnglishBody() {
       <section className="s2-static-section">
         <h2>9. Contact</h2>
         <p>
-          📞 / WhatsApp: <a href="tel:+97470338065">+974 7033 8065</a><br />
-          📧 <a href="mailto:info@elegantbayt.com">info@elegantbayt.com</a>
+          📞 / WhatsApp: <a href="tel:+96894103737">+968 9410 3737</a><br />
+          📧 <a href="mailto:info@felizoman.com">info@felizoman.com</a>
         </p>
       </section>
     </>
@@ -140,7 +140,7 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>4. الطلب والاستلام من المتجر</h2>
         <p>
-          اطلب عبر الإنترنت واستلم من متجرنا في الريان، قطر خلال 1–2 ساعة من تأكيد التجهيز، دون أي رسوم. ستصلك رسالة نصية / بريد إلكتروني عندما يكون الطلب جاهزًا.
+          اطلب عبر الإنترنت واستلم من متجرنا في برقاء الصناعية، سلطنة عُمان خلال 1–2 ساعة من تأكيد التجهيز، دون أي رسوم. ستصلك رسالة نصية / بريد إلكتروني عندما يكون الطلب جاهزًا.
         </p>
       </section>
 
@@ -175,8 +175,8 @@ function ArabicBody() {
       <section className="s2-static-section">
         <h2>9. التواصل</h2>
         <p>
-          📞 / واتساب: <a href="tel:+97470338065">+974 7033 8065</a><br />
-          📧 <a href="mailto:info@elegantbayt.com">info@elegantbayt.com</a>
+          📞 / واتساب: <a href="tel:+96894103737">+968 9410 3737</a><br />
+          📧 <a href="mailto:info@felizoman.com">info@felizoman.com</a>
         </p>
       </section>
     </>

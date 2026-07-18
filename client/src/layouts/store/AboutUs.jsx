@@ -4,9 +4,9 @@ import { ShoppingBag, Award, Truck, ShieldCheck, Headphones, RefreshCw, Mail, Ph
 import StaticPage from './StaticPage';
 
 const CONTACT_LINKS = (t) => [
-  { href: 'mailto:info@elegantbayt.com', Icon: Mail, title: t('contact.emailUs'), lines: ['info@elegantbayt.com'] },
-  { href: 'tel:+97470338065', Icon: Phone, title: t('contact.callUs'), lines: ['+974 7033 8065', '+974 5534 3471'] },
-  { href: 'https://wa.me/97470338065', Icon: MessageCircle, title: t('contact.whatsapp'), lines: [t('contact.whatsappLine')] },
+  { href: 'mailto:info@felizoman.com', Icon: Mail, title: t('contact.emailUs'), lines: ['info@felizoman.com'] },
+  { href: 'tel:+96894103737', Icon: Phone, title: t('contact.callUs'), lines: ['+968 9410 3737', '+968 9306 0404'] },
+  { href: 'https://wa.me/96894103737', Icon: MessageCircle, title: t('contact.whatsapp'), lines: [t('contact.whatsappLine')] },
 ];
 
 function ContactCards() {

@@ -1,6 +1,6 @@
 import { FaWhatsapp } from 'react-icons/fa6';
 
-const WHATSAPP_NUMBER = '97470338065';
+const WHATSAPP_NUMBER = '96894103737';
 
 export default function FloatingWhatsApp() {
   return (
