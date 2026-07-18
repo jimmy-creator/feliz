@@ -183,6 +183,33 @@ const seed = async () => {
       ]),
     });
 
+    // Mid-page sections (editable later in Admin → Settings → Theme). Each is a
+    // left text card plus up to 3 image cards; images are empty here so they show
+    // the frosted placeholder until real photography is uploaded.
+    await Setting.upsert({
+      key: 'mid-banners',
+      value: JSON.stringify([
+        {
+          title: 'Designed For Modern Kitchens',
+          subtitle: 'FELIZ sinks are where innovation meets style. Made with advanced quartz technology and crafted for durability, they bring elegance and functionality to your everyday kitchen life.',
+          cards: [
+            { image: '', mobileImage: '', title: 'Performance That Lasts', subtitle: 'Built for daily use with superior strength and durability.' },
+            { image: '', mobileImage: '', title: 'Elegance In Every Detail', subtitle: "Modern designs that elevate your kitchen's look." },
+            { image: '', mobileImage: '', title: 'Easy To Clean', subtitle: 'Smooth surfaces for effortless cleaning and hygiene.' },
+          ],
+        },
+        {
+          title: 'Superior Materials. Timeless Quality.',
+          subtitle: '',
+          cards: [
+            { image: '', mobileImage: '', title: 'Quartz', subtitle: 'Strong. Durable. Beautiful.' },
+            { image: '', mobileImage: '', title: 'Granite', subtitle: 'Naturally Tough. Heat Resistant.' },
+            { image: '', mobileImage: '', title: 'Ceramic', subtitle: 'Glossier Finish. Easy to Clean.' },
+          ],
+        },
+      ]),
+    });
+
     console.log(`Database seeded with ${products.length} products and ${categories.length} categories!`);
     console.log('Admin: admin@store.com / admin123');
     console.log('Customer: john@example.com / password123');

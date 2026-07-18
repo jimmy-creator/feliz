@@ -37,16 +37,30 @@ const HERO_FEATURES = [
   { icon: Headset, title: 'Dedicated Support', desc: '24/7 Customer Support' },
 ];
 
-const ABOUT_CARDS = [
-  { title: 'Performance That Lasts', desc: 'Built for daily use with superior strength and durability.' },
-  { title: 'Elegance In Every Detail', desc: "Modern designs that elevate your kitchen's look." },
-  { title: 'Easy To Clean', desc: 'Smooth surfaces for effortless cleaning and hygiene.' },
-];
-
-const MATERIALS = [
-  { title: 'Quartz', desc: 'Strong. Durable. Beautiful.' },
-  { title: 'Granite', desc: 'Naturally Tough. Heat Resistant.' },
-  { title: 'Ceramic', desc: 'Glossier Finish. Easy to Clean.' },
+// Fallback for the mid-page sections, shown until an admin saves any in
+// Admin → Settings → Theme → Mid-page Sections. Same shape as the stored
+// setting ({ title, subtitle, cards: [{ image, mobileImage, title, subtitle }] })
+// so one render path handles both. Cards have no image here, so they show the
+// frosted placeholder with the card title until real photography is uploaded.
+const MID_BANNERS_FALLBACK = [
+  {
+    title: 'Designed For Modern Kitchens',
+    subtitle: 'FELIZ sinks are where innovation meets style. Made with advanced quartz technology and crafted for durability, they bring elegance and functionality to your everyday kitchen life.',
+    cards: [
+      { title: 'Performance That Lasts', subtitle: 'Built for daily use with superior strength and durability.' },
+      { title: 'Elegance In Every Detail', subtitle: "Modern designs that elevate your kitchen's look." },
+      { title: 'Easy To Clean', subtitle: 'Smooth surfaces for effortless cleaning and hygiene.' },
+    ],
+  },
+  {
+    title: 'Superior Materials. Timeless Quality.',
+    subtitle: '',
+    cards: [
+      { title: 'Quartz', subtitle: 'Strong. Durable. Beautiful.' },
+      { title: 'Granite', subtitle: 'Naturally Tough. Heat Resistant.' },
+      { title: 'Ceramic', subtitle: 'Glossier Finish. Easy to Clean.' },
+    ],
+  },
 ];
 
 const TESTIMONIALS = [
@@ -88,11 +102,14 @@ function SectionHead({ eyebrow, title, to, viewAllLabel = 'View All Sinks', cent
 /* Image slot — real product/lifestyle photography isn't available yet, so this
    renders whatever the product has and falls back to a neutral frosted panel at
    the right aspect ratio. Swap in real assets without touching layout. */
-function ImageSlot({ src, alt, className, children }) {
+function ImageSlot({ src, mobileSrc, alt, className, children }) {
   return (
     <div className={cn('relative overflow-hidden bg-gradient-to-br from-white/70 to-[color:var(--bg-warm)]', className)}>
       {src ? (
-        <img src={src} alt={alt} loading="lazy" className="size-full object-cover" />
+        <picture>
+          {mobileSrc && <source media="(max-width: 720px)" srcSet={mobileSrc} />}
+          <img src={src} alt={alt} loading="lazy" className="size-full object-cover" />
+        </picture>
       ) : (
         <div className="flex size-full items-center justify-center">
           <span className="font-[var(--font-display)] text-xs uppercase tracking-[0.2em] text-foreground/25">
@@ -475,74 +492,54 @@ function BuiltForExcellence({ cards }) {
   );
 }
 
-function AboutFeliz() {
-  return (
-    <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)]">
-        <div className="glass-card rounded-2xl p-6">
-          <p className="eyebrow">About Feliz</p>
-          <h2 className="display-head mt-1 text-xl leading-tight sm:text-2xl">
-            Designed For<br />Modern Kitchens
-          </h2>
-          <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-            FELIZ sinks are where innovation meets style. Made with advanced quartz
-            technology and crafted for durability, they bring elegance and functionality
-            to your everyday kitchen life.
-          </p>
-          <Link
-            to="/about"
-            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[color:var(--copper)] px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[color:var(--copper-dark)]"
-          >
-            Know More <ArrowRight className="size-3" />
-          </Link>
-        </div>
+/* Mid-page sections, driven by Admin → Settings → Theme → Mid-page Sections.
+   Each section is a left text card (title + optional description) and up to 3
+   image cards whose title/subtitle are overlaid on the image. Falls back to the
+   original static content until an admin configures the setting. */
+function MidBanners({ banners }) {
+  const sections = banners.length ? banners : MID_BANNERS_FALLBACK;
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          {ABOUT_CARDS.map(({ title, desc }) => (
-            <div key={title} className="glass-card relative overflow-hidden rounded-2xl">
-              <ImageSlot alt={title} className="aspect-[4/5]" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-4 text-white">
-                <p className="text-[10px] font-bold uppercase tracking-wide">{title}</p>
-                <p className="mt-1 text-[10px] leading-snug text-white/80">{desc}</p>
+  return (
+    <>
+      {sections.map((section, si) => {
+        const cards = section.cards || [];
+        // The navbar's "Sink Material" link targets #materials; keep it pointed
+        // at the last section (the Materials block in the default layout).
+        const isLast = si === sections.length - 1;
+        return (
+          <section
+            key={si}
+            id={isLast ? 'materials' : undefined}
+            className="mx-auto mt-10 max-w-[1330px] scroll-mt-28 px-3 lg:px-6"
+          >
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)]">
+              <div className="glass-card flex flex-col justify-center rounded-2xl p-6">
+                {section.title && (
+                  <h2 className="display-head text-xl leading-tight sm:text-2xl">{section.title}</h2>
+                )}
+                {section.subtitle && (
+                  <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">{section.subtitle}</p>
+                )}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {cards.map((card, ci) => (
+                  <div key={ci} className="glass-card relative overflow-hidden rounded-2xl">
+                    <ImageSlot src={card.image} mobileSrc={card.mobileImage} alt={card.title} className="aspect-[4/5]" />
+                    {(card.title || card.subtitle) && (
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-4 text-white">
+                        {card.title && <p className="text-[10px] font-bold uppercase tracking-wide">{card.title}</p>}
+                        {card.subtitle && <p className="mt-1 text-[10px] leading-snug text-white/80">{card.subtitle}</p>}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SinkMaterials() {
-  return (
-    <section id="materials" className="mx-auto mt-10 max-w-[1330px] scroll-mt-28 px-3 lg:px-6">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)]">
-        <div>
-          <p className="eyebrow">Sink Materials</p>
-          <h2 className="display-head mt-1 text-xl leading-tight sm:text-2xl">
-            Superior Materials.<br />Timeless Quality.
-          </h2>
-          <Link
-            to="/products"
-            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[color:var(--copper)] px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[color:var(--copper-dark)]"
-          >
-            View All Materials <ArrowRight className="size-3" />
-          </Link>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          {MATERIALS.map(({ title, desc }) => (
-            <div key={title} className="glass-card overflow-hidden rounded-2xl">
-              <ImageSlot alt={title} className="aspect-[16/9]" />
-              <div className="p-4">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-foreground">{title}</p>
-                <p className="mt-1 text-[10px] leading-snug text-muted-foreground">{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+          </section>
+        );
+      })}
+    </>
   );
 }
 
@@ -622,6 +619,7 @@ export default function Home() {
   const [topPicks, setTopPicks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [excellence, setExcellence] = useState([]);
+  const [midBanners, setMidBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   // Seeded from cache so the hero doesn't flash the fallback on repeat visits.
   const [banners, setBanners] = useState(() => {
@@ -645,6 +643,10 @@ export default function Home() {
 
     api.get('/settings/excellence')
       .then((res) => setExcellence(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+
+    api.get('/settings/mid-banners')
+      .then((res) => setMidBanners(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
 
     api.get('/products?featured=true&limit=10')
@@ -672,8 +674,7 @@ export default function Home() {
       />
 
       <BuiltForExcellence cards={excellence} />
-      <AboutFeliz />
-      <SinkMaterials />
+      <MidBanners banners={midBanners} />
       <HappyHomes />
 
       <ProductRail

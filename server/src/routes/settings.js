@@ -81,7 +81,9 @@ router.put('/banners', protect, admin, async (req, res) => {
   }
 });
 
-// Mid-page banners (rendered below the best-sellers section)
+// Mid-page sections (the "Designed For Modern Kitchens" / "Superior Materials"
+// blocks on the home page). Each section is a left text card ({ title,
+// subtitle }) plus up to 3 image cards ({ image, mobileImage, title, subtitle }).
 router.get('/mid-banners', async (req, res) => {
   try {
     const setting = await Setting.findByPk('mid-banners');
@@ -96,10 +98,23 @@ router.put('/mid-banners', protect, admin, async (req, res) => {
   try {
     const { banners } = req.body;
     if (!Array.isArray(banners) || banners.length > 3) {
-      return res.status(400).json({ message: 'Provide an array of up to 3 mid-page banners' });
+      return res.status(400).json({ message: 'Provide an array of up to 3 mid-page sections' });
     }
-    await Setting.upsert({ key: 'mid-banners', value: JSON.stringify(banners) });
-    res.json(banners);
+    // Normalise to the known shape and cap each section at 3 cards.
+    const clean = banners.map((b) => ({
+      title: b.title || '',
+      subtitle: b.subtitle || '',
+      cards: Array.isArray(b.cards)
+        ? b.cards.slice(0, 3).map((c) => ({
+            image: c.image || '',
+            mobileImage: c.mobileImage || '',
+            title: c.title || '',
+            subtitle: c.subtitle || '',
+          }))
+        : [],
+    }));
+    await Setting.upsert({ key: 'mid-banners', value: JSON.stringify(clean) });
+    res.json(clean);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

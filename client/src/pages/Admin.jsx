@@ -444,6 +444,193 @@ function BannerEditor({
   );
 }
 
+const MAX_MID_SECTIONS = 3;
+const MAX_MID_CARDS = 3;
+
+// Mid-page sections — each is one home-page block: a left text card
+// ({ title, subtitle }) plus up to 3 image cards ({ image, mobileImage, title,
+// subtitle }) rendered with the title/subtitle overlaid on the image. Auto-saves
+// like the banner editors.
+function MidBannerEditor() {
+  const [sections, setSections] = useState([]);
+  const [uploadingKey, setUploadingKey] = useState(null);
+
+  useEffect(() => {
+    api.get('/settings/mid-banners')
+      .then((res) => setSections(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+  }, []);
+
+  const save = async (next) => {
+    try {
+      await api.put('/settings/mid-banners', { banners: next });
+      setSections(next);
+      toast.success('Mid-page sections saved');
+    } catch {
+      toast.error('Failed to save mid-page sections');
+    }
+  };
+
+  const updateSection = (si, field, value) => {
+    setSections(sections.map((s, i) => i === si ? { ...s, [field]: value } : s));
+  };
+
+  const updateCard = (si, ci, field, value) => {
+    setSections(sections.map((s, i) => i === si
+      ? { ...s, cards: s.cards.map((c, j) => j === ci ? { ...c, [field]: value } : c) }
+      : s));
+  };
+
+  const uploadCardField = async (si, ci, field, file) => {
+    if (!file) return;
+    setUploadingKey(`${si}-${ci}-${field}`);
+    try {
+      const fd = new FormData();
+      fd.append('image', file);
+      const { data } = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      save(sections.map((s, i) => i === si
+        ? { ...s, cards: s.cards.map((c, j) => j === ci ? { ...c, [field]: data.url } : c) }
+        : s));
+    } catch {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
+  const addSection = () => {
+    if (sections.length >= MAX_MID_SECTIONS) return;
+    save([...sections, { title: '', subtitle: '', cards: [] }]);
+  };
+  const removeSection = (si) => save(sections.filter((_, i) => i !== si));
+  const moveSection = (si, dir) => {
+    const j = si + dir;
+    if (j < 0 || j >= sections.length) return;
+    const next = [...sections];
+    [next[si], next[j]] = [next[j], next[si]];
+    save(next);
+  };
+
+  const addCard = (si) => {
+    save(sections.map((s, i) => (i === si && (s.cards?.length || 0) < MAX_MID_CARDS)
+      ? { ...s, cards: [...(s.cards || []), { image: '', mobileImage: '', title: '', subtitle: '' }] }
+      : s));
+  };
+  const removeCard = (si, ci) => {
+    save(sections.map((s, i) => i === si ? { ...s, cards: s.cards.filter((_, j) => j !== ci) } : s));
+  };
+
+  const inputStyle = { padding: '0.5rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.82rem', background: 'var(--bg-warm)', width: '100%' };
+  const imgCell = (si, ci, field, aspect, label) => {
+    const card = sections[si].cards[ci];
+    const url = card[field];
+    return (
+      <label style={{ cursor: 'pointer', display: 'block' }} title={`${label} (click to upload/replace)`}>
+        <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', aspectRatio: aspect, background: 'var(--bg-warm)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: url ? 'none' : '1.5px dashed var(--border)' }}>
+          {url
+            ? <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            : <span style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>{uploadingKey === `${si}-${ci}-${field}` ? '…' : '+ Add'}</span>}
+        </div>
+        <span style={{ display: 'block', textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => uploadCardField(si, ci, field, e.target.files[0])} />
+      </label>
+    );
+  };
+
+  return (
+    <div style={{ marginTop: '3rem' }}>
+      <h3 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '1rem' }}>
+        Mid-page Sections ({sections.length}/{MAX_MID_SECTIONS})
+      </h3>
+      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
+        The feature blocks on the home page (below Best Sellers). Each section has a left text card — a title and an optional description — plus up to 3 image cards whose title &amp; subtitle appear over the image.
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '1.5rem' }}>
+        {sections.map((section, si) => (
+          <div key={si} style={{ padding: '1.25rem', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--bg-card)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.85rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Section {si + 1}</span>
+              <div style={{ display: 'flex', gap: '0.35rem' }}>
+                <button onClick={() => moveSection(si, -1)} disabled={si === 0} style={{ padding: '0.3rem 0.5rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg-warm)', cursor: si === 0 ? 'default' : 'pointer', opacity: si === 0 ? 0.3 : 1, fontSize: '0.75rem' }}>▲</button>
+                <button onClick={() => moveSection(si, 1)} disabled={si === sections.length - 1} style={{ padding: '0.3rem 0.5rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg-warm)', cursor: si === sections.length - 1 ? 'default' : 'pointer', opacity: si === sections.length - 1 ? 0.3 : 1, fontSize: '0.75rem' }}>▼</button>
+                <button onClick={() => removeSection(si)} style={{ padding: '0.3rem 0.5rem', border: '1px solid var(--danger)', borderRadius: 'var(--radius)', background: 'transparent', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.75rem' }}><HiTrash /></button>
+              </div>
+            </div>
+
+            {/* Left text card */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+              <input
+                value={section.title || ''}
+                onChange={(e) => updateSection(si, 'title', e.target.value)}
+                onBlur={() => save(sections)}
+                placeholder="Section title (e.g. Designed For Modern Kitchens)"
+                style={{ ...inputStyle, fontSize: '0.9rem', fontWeight: 600 }}
+              />
+              <textarea
+                value={section.subtitle || ''}
+                onChange={(e) => updateSection(si, 'subtitle', e.target.value)}
+                onBlur={() => save(sections)}
+                rows={2}
+                placeholder="Description (optional)"
+                style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
+              />
+            </div>
+
+            {/* Image cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {(section.cards || []).map((card, ci) => (
+                <div key={ci} style={{
+                  display: 'grid',
+                  gridTemplateColumns: '110px 80px 1fr auto',
+                  gap: '0.85rem',
+                  padding: '0.85rem',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius)',
+                  background: 'var(--bg-warm)',
+                  alignItems: 'start',
+                }}>
+                  {imgCell(si, ci, 'image', '4/5', 'Image')}
+                  {imgCell(si, ci, 'mobileImage', '5/7', 'Mobile')}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <input
+                      value={card.title || ''}
+                      onChange={(e) => updateCard(si, ci, 'title', e.target.value)}
+                      onBlur={() => save(sections)}
+                      placeholder="Card title (e.g. Performance That Lasts)"
+                      style={inputStyle}
+                    />
+                    <input
+                      value={card.subtitle || ''}
+                      onChange={(e) => updateCard(si, ci, 'subtitle', e.target.value)}
+                      onBlur={() => save(sections)}
+                      placeholder="Card subtitle (e.g. Built for daily use.)"
+                      style={inputStyle}
+                    />
+                  </div>
+                  <button onClick={() => removeCard(si, ci)} style={{ padding: '0.3rem 0.5rem', border: '1px solid var(--danger)', borderRadius: 'var(--radius)', background: 'transparent', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.75rem' }}><HiTrash /></button>
+                </div>
+              ))}
+            </div>
+
+            {(section.cards?.length || 0) < MAX_MID_CARDS && (
+              <button type="button" className="btn btn-secondary" style={{ marginTop: '0.85rem' }} onClick={() => addCard(si)}>
+                <HiPlus /> Add Image Card
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {sections.length < MAX_MID_SECTIONS && (
+        <button type="button" className="btn btn-secondary" onClick={addSection}>
+          <HiPlus /> Add Section
+        </button>
+      )}
+    </div>
+  );
+}
+
 function CategoryCardsEditor() {
   const [cards, setCards] = useState([]);
 
@@ -4641,13 +4828,8 @@ export default function Admin() {
             {/* Home Page Banners Carousel */}
             <BannerEditor />
 
-            {/* Mid-page Banner — rendered below the best-sellers section */}
-            <BannerEditor
-              endpoint="/settings/mid-banners"
-              title="Mid-page Banners"
-              description="Add up to 3 banners shown after the Best Sellers section on the home page. Useful for promotions, new arrivals, or seasonal campaigns."
-              maxBanners={3}
-            />
+            {/* Mid-page Sections — the feature blocks below Best Sellers */}
+            <MidBannerEditor />
 
             {/* Built For Excellence — feature cards left of the home page video */}
             <ExcellenceEditor />
