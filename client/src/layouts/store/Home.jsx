@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowRight, ShieldCheck, BadgeCheck, Flame, Truck, RotateCcw, Headset,
-  Play, ChevronLeft, ChevronRight, Star, Heart, ShoppingCart, CreditCard,
+  ChevronLeft, ChevronRight, Star, Heart, ShoppingCart, CreditCard,
 } from 'lucide-react';
 import api from '../../api/axios';
 import SEO from '../../components/SEO';
@@ -28,6 +28,11 @@ const EXCELLENCE_FALLBACK = [
   { icon: 'truck', titleKey: 'home.excellenceFallback.freeShipping', subtitleKey: 'home.excellenceFallback.freeShippingDesc' },
   { icon: 'returns', titleKey: 'home.excellenceFallback.easyReturns', subtitleKey: 'home.excellenceFallback.easyReturnsDesc' },
 ];
+
+// Fallback for the "Crafted To Perfection" showcase video, shown until an admin
+// saves one in Admin → Settings → Theme → Showcase Video. The title/subtitle
+// fall back to the i18n strings (home.craftedTitle / home.craftedDesc).
+const CRAFT_VIDEO_FALLBACK_URL = 'https://res.cloudinary.com/cvrv3c6j/video/upload/WhatsApp_Video_2026-07-18_at_11.36.00_AM_ptugql.mp4';
 
 const HERO_FEATURES = [
   { icon: ShieldCheck, titleKey: 'home.feat.premiumQuality', descKey: 'home.feat.premiumQualityDesc' },
@@ -446,11 +451,15 @@ function ProductRail({ eyebrow, title, products, loading, badge = 'heart' }) {
   );
 }
 
-function BuiltForExcellence({ cards }) {
+function BuiltForExcellence({ cards, video }) {
   const { t } = useTranslation();
   const items = cards.length
     ? cards
     : EXCELLENCE_FALLBACK.map((c) => ({ icon: c.icon, title: t(c.titleKey), subtitle: t(c.subtitleKey) }));
+
+  const videoUrl = video?.videoUrl || CRAFT_VIDEO_FALLBACK_URL;
+  const craftTitle = video?.title ? localizedField(video, 'title') : t('home.craftedTitle');
+  const craftSubtitle = video?.subtitle ? localizedField(video, 'subtitle') : t('home.craftedDesc');
 
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
@@ -486,13 +495,19 @@ function BuiltForExcellence({ cards }) {
 
         {/* Video card — size unchanged; it now aligns with the eyebrow. */}
         <div className="glass-card relative self-start overflow-hidden rounded-2xl">
-          <ImageSlot alt="Crafted to perfection" className="aspect-[16/11]" />
-          <span className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg">
-            <Play className="ml-0.5 size-4 fill-foreground text-foreground" />
-          </span>
+          <video
+            key={videoUrl}
+            className="aspect-[16/11] w-full object-cover"
+            src={videoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-4 text-center text-white">
-            <p className="text-[11px] font-bold uppercase tracking-wide">{t('home.craftedTitle')}</p>
-            <p className="mt-0.5 text-[10px] text-white/80">{t('home.craftedDesc')}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide">{craftTitle}</p>
+            <p className="mt-0.5 text-[10px] text-white/80">{craftSubtitle}</p>
           </div>
         </div>
       </div>
@@ -635,6 +650,7 @@ export default function Home() {
   const [topPicks, setTopPicks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [excellence, setExcellence] = useState([]);
+  const [craftVideo, setCraftVideo] = useState(null);
   const [midBanners, setMidBanners] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -660,6 +676,10 @@ export default function Home() {
 
     api.get('/settings/excellence')
       .then((res) => setExcellence(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
+
+    api.get('/settings/craft-video')
+      .then((res) => setCraftVideo(res.data || null))
       .catch(() => {});
 
     api.get('/settings/mid-banners')
@@ -694,7 +714,7 @@ export default function Home() {
         loading={loading}
       />
 
-      <BuiltForExcellence cards={excellence} />
+      <BuiltForExcellence cards={excellence} video={craftVideo} />
       <MidBanners banners={midBanners} />
       <HappyHomes reviews={reviews} />
 

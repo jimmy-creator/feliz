@@ -214,6 +214,36 @@ router.put('/excellence', protect, admin, async (req, res) => {
   }
 });
 
+// "Crafted To Perfection" showcase video (home page — right of the excellence
+// cards). A single object: { videoUrl, title, titleAr, subtitle, subtitleAr }.
+// Returns null until an admin saves one, so the storefront falls back to its
+// built-in default clip and i18n caption.
+router.get('/craft-video', async (req, res) => {
+  try {
+    const setting = await Setting.findByPk('craft-video');
+    res.json(setting?.value ? JSON.parse(setting.value) : null);
+  } catch (error) {
+    res.json(null);
+  }
+});
+
+router.put('/craft-video', protect, admin, async (req, res) => {
+  try {
+    const b = req.body || {};
+    const clean = {
+      videoUrl: String(b.videoUrl || '').trim(),
+      title: String(b.title || '').trim(),
+      titleAr: String(b.titleAr || '').trim(),
+      subtitle: String(b.subtitle || '').trim(),
+      subtitleAr: String(b.subtitleAr || '').trim(),
+    };
+    await Setting.upsert({ key: 'craft-video', value: JSON.stringify(clean) });
+    res.json(clean);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // B2B bank-transfer details — free-form text included in the quote email when
 // the admin picks the bank-transfer payment method.
 router.get('/b2b-bank-details', protect, admin, async (req, res) => {

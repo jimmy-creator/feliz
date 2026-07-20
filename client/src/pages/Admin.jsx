@@ -815,6 +815,96 @@ function CategoryCardsEditor() {
   );
 }
 
+// "Crafted To Perfection" showcase video — the looping clip on the home page,
+// right of the "Built For Excellence" cards. A single object stored under the
+// `craft-video` setting: { videoUrl, title, titleAr, subtitle, subtitleAr }.
+// Paste a hosted video URL (e.g. a Cloudinary .mp4 delivery link); blank fields
+// fall back to the storefront's built-in defaults.
+// The storefront's built-in defaults (kept in sync with CRAFT_VIDEO_FALLBACK_URL
+// and the home.craftedTitle/craftedDesc i18n strings). Shown pre-filled so the
+// admin sees what's currently live before there's a saved `craft-video` row.
+const CRAFT_VIDEO_DEFAULTS = {
+  videoUrl: 'https://res.cloudinary.com/cvrv3c6j/video/upload/WhatsApp_Video_2026-07-18_at_11.36.00_AM_ptugql.mp4',
+  title: 'Crafted To Perfection',
+  titleAr: '',
+  subtitle: 'Designed for modern kitchens that inspire.',
+  subtitleAr: '',
+};
+
+function CraftVideoEditor() {
+  const [form, setForm] = useState(CRAFT_VIDEO_DEFAULTS);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    api.get('/settings/craft-video')
+      .then((res) => { if (res.data) setForm((prev) => ({ ...prev, ...res.data })); })
+      .catch(() => {});
+  }, []);
+
+  const set = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.put('/settings/craft-video', form);
+      toast.success('Showcase video saved');
+    } catch {
+      toast.error('Failed to save video');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputStyle = { width: '100%', padding: '0.55rem 0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: '0.85rem', background: 'var(--bg-warm)' };
+  const labelStyle = { display: 'block', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.3rem' };
+
+  return (
+    <div style={{ marginTop: '3rem' }}>
+      <h3 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '1rem' }}>
+        Showcase Video ("Crafted To Perfection")
+      </h3>
+      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
+        The looping video on the home page, right of the "Built For Excellence" cards. Paste a hosted video URL (e.g. a Cloudinary delivery link ending in <strong>.mp4</strong>) — it plays muted and loops. The Arabic fields are optional, shown when the store is in Arabic. Leave a field blank to use the built-in default.
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '640px' }}>
+        <div>
+          <label style={labelStyle}>Video URL</label>
+          <input value={form.videoUrl} onChange={(e) => set('videoUrl', e.target.value)} placeholder="https://res.cloudinary.com/.../video.mp4" style={inputStyle} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+          <div>
+            <label style={labelStyle}>Title</label>
+            <input value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="Crafted to Perfection" style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Title (Arabic)</label>
+            <input value={form.titleAr} onChange={(e) => set('titleAr', e.target.value)} dir="rtl" placeholder="اختياري" style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Subtitle</label>
+            <input value={form.subtitle} onChange={(e) => set('subtitle', e.target.value)} placeholder="Designed for modern kitchens that inspire." style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Subtitle (Arabic)</label>
+            <input value={form.subtitleAr} onChange={(e) => set('subtitleAr', e.target.value)} dir="rtl" placeholder="اختياري" style={inputStyle} />
+          </div>
+        </div>
+      </div>
+
+      {form.videoUrl && (
+        <video key={form.videoUrl} src={form.videoUrl} muted loop autoPlay playsInline style={{ marginTop: '1rem', width: '280px', aspectRatio: '16 / 11', objectFit: 'cover', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }} />
+      )}
+
+      <div>
+        <button type="button" onClick={save} disabled={saving} className="btn btn-primary" style={{ marginTop: '1rem' }}>
+          {saving ? 'Saving…' : 'Save video'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function B2BBankDetailsEditor() {
   const [value, setValue] = useState('');
   const [saving, setSaving] = useState(false);
@@ -4896,6 +4986,9 @@ export default function Admin() {
 
             {/* Built For Excellence — feature cards left of the home page video */}
             <ExcellenceEditor />
+
+            {/* Showcase Video — the looping "Crafted To Perfection" clip */}
+            <CraftVideoEditor />
 
             {/* Category Cards — large coloured tiles on the home page */}
             <CategoryCardsEditor />
