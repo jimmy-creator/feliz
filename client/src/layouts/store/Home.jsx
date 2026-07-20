@@ -107,6 +107,24 @@ function SectionHead({ eyebrow, title, to, viewAllLabel, centered = false }) {
   );
 }
 
+/* Prev/next arrows for the mobile horizontal rails (categories, excellence,
+   mid-banners). Shown only below `lg`, where those sections switch from a grid
+   to a swipe/scroll rail; on desktop they stay grids and need no arrows. Mirrors
+   the desktop arrows on ProductRail/HappyHomes. */
+function RailArrows({ onPrev, onNext }) {
+  const base = 'glass-card absolute top-1/2 z-10 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-foreground transition-colors hover:text-[color:var(--copper)] lg:hidden';
+  return (
+    <>
+      <button type="button" onClick={onPrev} aria-label="Previous" className={cn(base, '-left-2')}>
+        <ChevronLeft className="size-4" />
+      </button>
+      <button type="button" onClick={onNext} aria-label="Next" className={cn(base, '-right-2')}>
+        <ChevronRight className="size-4" />
+      </button>
+    </>
+  );
+}
+
 /* Image slot — real product/lifestyle photography isn't available yet, so this
    renders whatever the product has and falls back to a neutral frosted panel at
    the right aspect ratio. Swap in real assets without touching layout. */
@@ -259,7 +277,7 @@ function BannerHero({ banners }) {
               <img
                 src={banner.image}
                 alt={banner.title || 'FELIZ premium kitchen sinks'}
-                className="aspect-[4/5] w-full object-cover sm:aspect-[16/6]"
+                className="block w-full sm:aspect-[16/6] sm:object-cover"
                 fetchPriority={i === 0 ? 'high' : 'auto'}
                 loading={i === 0 ? 'eager' : 'lazy'}
               />
@@ -312,39 +330,47 @@ function Hero({ banners }) {
    Admin → Categories. */
 function ExploreRange({ categories }) {
   const { t } = useTranslation();
+  const railRef = useRef(null);
+  const scrollBy = (dir) => railRef.current?.scrollBy({ left: dir * 260, behavior: 'smooth' });
   if (!categories.length) return null;
 
   return (
     <section className="mx-auto mt-10 max-w-[1330px] px-3 lg:px-6">
-      <div className="mb-5 text-center">
-        <p className="eyebrow">{t('home.collectionEyebrow')}</p>
-        <h2 className="display-head mt-0.5 inline-block border-b-[3px] border-[color:var(--copper)] pb-1 text-2xl sm:text-[28px]">
-          {t('home.collectionTitle')}
-        </h2>
-      </div>
+      <SectionHead
+        eyebrow={t('home.collectionEyebrow')}
+        title={t('home.collectionTitle')}
+        to="/products"
+        viewAllLabel={t('home.viewAllCategories')}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category) => {
-          const label = localizedName(category);
-          return (
-            <Link
-              key={category.id || category.name}
-              to={`/products?category=${encodeURIComponent(category.name)}`}
-              className="glass-card group grid grid-cols-[1fr_1.1fr] items-center gap-3 overflow-hidden rounded-2xl p-5 transition-shadow hover:shadow-lg"
-            >
-              <div className="min-w-0">
-                <h3 className="text-[13px] font-bold uppercase tracking-wide text-foreground">{label}</h3>
-                {category.description && (
-                  <p className="mt-2 text-[11px] leading-snug text-muted-foreground">{category.description}</p>
-                )}
-                <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-foreground transition-colors group-hover:text-[color:var(--copper)]">
-                  {t('common.shopNow')} <ArrowRight className="size-3" />
-                </span>
-              </div>
-              <ImageSlot src={category.image} alt={label} className="aspect-[4/3] rounded-xl" />
-            </Link>
-          );
-        })}
+      <div className="relative">
+        {categories.length > 1 && <RailArrows onPrev={() => scrollBy(-1)} onNext={() => scrollBy(1)} />}
+        <div
+          ref={railRef}
+          className="flex gap-4 overflow-x-auto scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3 lg:overflow-visible"
+        >
+          {categories.map((category) => {
+            const label = localizedName(category);
+            return (
+              <Link
+                key={category.id || category.name}
+                to={`/products?category=${encodeURIComponent(category.name)}`}
+                className="glass-card group grid w-[82%] shrink-0 grid-cols-[1fr_1.1fr] items-center gap-3 overflow-hidden rounded-2xl p-5 transition-shadow hover:shadow-lg sm:w-[46%] lg:w-auto"
+              >
+                <div className="min-w-0">
+                  <h3 className="text-[13px] font-bold uppercase tracking-wide text-foreground">{label}</h3>
+                  {category.description && (
+                    <p className="mt-2 text-[11px] leading-snug text-muted-foreground">{category.description}</p>
+                  )}
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-foreground transition-colors group-hover:text-[color:var(--copper)]">
+                    {t('common.shopNow')} <ArrowRight className="size-3" />
+                  </span>
+                </div>
+                <ImageSlot src={category.image} alt={label} className="aspect-[4/3] rounded-xl" />
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -453,6 +479,8 @@ function ProductRail({ eyebrow, title, products, loading, badge = 'heart' }) {
 
 function BuiltForExcellence({ cards, video }) {
   const { t } = useTranslation();
+  const railRef = useRef(null);
+  const scrollBy = (dir) => railRef.current?.scrollBy({ left: dir * 200, behavior: 'smooth' });
   const items = cards.length
     ? cards
     : EXCELLENCE_FALLBACK.map((c) => ({ icon: c.icon, title: t(c.titleKey), subtitle: t(c.subtitleKey) }));
@@ -467,29 +495,35 @@ function BuiltForExcellence({ cards, video }) {
           the top of the row, level with the eyebrow. Keeping the heading above
           the grid made the cards share a row with the video and stretch to its
           aspect-ratio height. */}
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
         <div className="flex flex-col">
           <p className="eyebrow">{t('home.excellenceEyebrow')}</p>
           <h2 className="display-head mt-0.5 text-2xl sm:text-[28px]">{t('home.excellenceTitle')}</h2>
 
-          {/* Column count is fixed at 5 so fewer cards keep their width and the
-              video stays on the right — they simply leave trailing columns
-              empty rather than stretching to fill the row. */}
-          <div className="mt-5 grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {items.map((item, i) => {
-              const Icon = excellenceIcon(item.icon);
-              return (
-                <div key={`${item.title}-${i}`} className="glass-card flex flex-col items-center justify-center rounded-2xl px-3 py-6 text-center">
-                  <span className="flex size-9 items-center justify-center rounded-full border border-foreground/15">
-                    <Icon className="size-4" strokeWidth={1.6} />
-                  </span>
-                  <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{localizedField(item, 'title')}</h3>
-                  {item.subtitle && (
-                    <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{localizedField(item, 'subtitle')}</p>
-                  )}
-                </div>
-              );
-            })}
+          {/* Below lg the cards become a swipeable rail (with arrows); at lg they
+              return to a fixed 5-column grid so fewer cards keep their width and
+              the video stays on the right. */}
+          <div className="relative mt-5 flex-1">
+            {items.length > 1 && <RailArrows onPrev={() => scrollBy(-1)} onNext={() => scrollBy(1)} />}
+            <div
+              ref={railRef}
+              className="flex gap-3 overflow-x-auto scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:h-full lg:grid-cols-5 lg:overflow-visible"
+            >
+              {items.map((item, i) => {
+                const Icon = excellenceIcon(item.icon);
+                return (
+                  <div key={`${item.title}-${i}`} className="glass-card flex w-[40%] shrink-0 flex-col items-center justify-center rounded-2xl px-3 py-6 text-center sm:w-[24%] lg:w-auto">
+                    <span className="flex size-9 items-center justify-center rounded-full border border-foreground/15">
+                      <Icon className="size-4" strokeWidth={1.6} />
+                    </span>
+                    <h3 className="mt-3 text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground">{localizedField(item, 'title')}</h3>
+                    {item.subtitle && (
+                      <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{localizedField(item, 'subtitle')}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -524,45 +558,56 @@ function MidBanners({ banners }) {
 
   return (
     <>
-      {sections.map((section, si) => {
-        const cards = section.cards || [];
+      {sections.map((section, si) => (
         // The navbar's "Sink Material" link targets #materials; keep it pointed
         // at the last section (the Materials block in the default layout).
-        const isLast = si === sections.length - 1;
-        return (
-          <section
-            key={si}
-            id={isLast ? 'materials' : undefined}
-            className="mx-auto mt-10 max-w-[1330px] scroll-mt-28 px-3 lg:px-6"
-          >
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)]">
-              <div className="glass-card flex flex-col justify-center rounded-2xl p-6">
-                {section.title && (
-                  <h2 className="display-head text-xl leading-tight sm:text-2xl">{localizedField(section, 'title')}</h2>
-                )}
-                {section.subtitle && (
-                  <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">{localizedField(section, 'subtitle')}</p>
-                )}
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                {cards.map((card, ci) => (
-                  <div key={ci} className="glass-card relative overflow-hidden rounded-2xl">
-                    <ImageSlot src={card.image} mobileSrc={card.mobileImage} alt={card.title} className="aspect-[4/5]" />
-                    {(card.title || card.subtitle) && (
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-4 text-white">
-                        {card.title && <p className="text-[10px] font-bold uppercase tracking-wide">{localizedField(card, 'title')}</p>}
-                        {card.subtitle && <p className="mt-1 text-[10px] leading-snug text-white/80">{localizedField(card, 'subtitle')}</p>}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        );
-      })}
+        <MidBannerRow key={si} section={section} isLast={si === sections.length - 1} />
+      ))}
     </>
+  );
+}
+
+function MidBannerRow({ section, isLast }) {
+  const cards = section.cards || [];
+  const railRef = useRef(null);
+  const scrollBy = (dir) => railRef.current?.scrollBy({ left: dir * 260, behavior: 'smooth' });
+
+  return (
+    <section
+      id={isLast ? 'materials' : undefined}
+      className="mx-auto mt-10 max-w-[1330px] scroll-mt-28 px-3 lg:px-6"
+    >
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)]">
+        <div className="glass-card flex flex-col justify-center rounded-2xl p-6">
+          {section.title && (
+            <h2 className="display-head text-xl leading-tight sm:text-2xl">{localizedField(section, 'title')}</h2>
+          )}
+          {section.subtitle && (
+            <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">{localizedField(section, 'subtitle')}</p>
+          )}
+        </div>
+
+        <div className="relative">
+          {cards.length > 1 && <RailArrows onPrev={() => scrollBy(-1)} onNext={() => scrollBy(1)} />}
+          <div
+            ref={railRef}
+            className="flex gap-4 overflow-x-auto scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3 lg:overflow-visible"
+          >
+            {cards.map((card, ci) => (
+              <div key={ci} className="glass-card relative w-[72%] shrink-0 overflow-hidden rounded-2xl sm:w-[40%] lg:w-auto">
+                <ImageSlot src={card.image} mobileSrc={card.mobileImage} alt={card.title} className="aspect-[4/5]" />
+                {(card.title || card.subtitle) && (
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-4 text-white">
+                    {card.title && <p className="text-[10px] font-bold uppercase tracking-wide">{localizedField(card, 'title')}</p>}
+                    {card.subtitle && <p className="mt-1 text-[10px] leading-snug text-white/80">{localizedField(card, 'subtitle')}</p>}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
