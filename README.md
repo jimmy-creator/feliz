@@ -25,6 +25,25 @@ A full-stack e-commerce web application built with React (Vite) and Node.js, opt
 - Responsive design with editorial luxury aesthetic
 - Rate limiting, CSRF protection, password strength validation
 
+## Home Showcase Video (Cloudinary)
+
+The "Crafted To Perfection" video on the home page (right of the "Built For
+Excellence" cards) is set from **Admin → Settings → Theme → Showcase Video** —
+no code change and no API keys required. Paste a hosted video URL plus an
+optional title/subtitle; it plays muted and loops, and falls back to a built-in
+default clip until one is saved.
+
+Use the **direct delivery URL** (must end in `.mp4`), not the player-embed link:
+
+```
+https://res.cloudinary.com/<cloud_name>/video/upload/<public_id>.mp4
+```
+
+If you have the Cloudinary player-embed URL, e.g.
+`https://player.cloudinary.com/embed/?cloud_name=cvrv3c6j&public_id=<public_id>`,
+convert it to the delivery form above (take `cloud_name` and `public_id`, drop
+the rest, append `.mp4`). The current store uses cloud name `cvrv3c6j`.
+
 ## Getting Started
 
 ### Prerequisites
