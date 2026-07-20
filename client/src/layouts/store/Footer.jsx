@@ -81,9 +81,9 @@ export default function Footer() {
   return (
     <footer className="mx-auto mt-5 max-w-[1330px] px-3 pb-4 lg:px-6">
       <div className="glass rounded-[22px] px-6 py-8 sm:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
-          {/* Brand */}
-          <div>
+        <div className="grid grid-cols-2 gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+          {/* Brand — full width on mobile/tablet, first column on desktop */}
+          <div className="col-span-2 lg:col-span-1">
             <Link to="/">
               <img src="/images/feliz-logo.png" alt={STORE_NAME} className="h-9 w-auto" />
             </Link>
