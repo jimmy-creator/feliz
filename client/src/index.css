@@ -217,15 +217,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(38rem 26rem at 18% 10%, rgba(255, 255, 255, 0.9), transparent 62%),
-    radial-gradient(34rem 26rem at 74% 12%, rgba(150, 205, 202, 0.5), transparent 64%),
-    radial-gradient(30rem 24rem at 28% 40%, rgba(168, 214, 214, 0.42), transparent 64%),
-    radial-gradient(32rem 26rem at 82% 52%, rgba(186, 206, 226, 0.38), transparent 64%),
-    radial-gradient(28rem 22rem at 42% 72%, rgba(196, 224, 218, 0.4), transparent 64%),
-    radial-gradient(34rem 26rem at 76% 88%, rgba(160, 206, 204, 0.42), transparent 64%),
-    radial-gradient(30rem 24rem at 14% 92%, rgba(200, 218, 228, 0.4), transparent 64%),
-    linear-gradient(165deg, #f0f6f5 0%, #e3eceb 34%, #d7e3e3 68%, #cedcdd 100%);
+  background: #ffffff;
 }
 
 /* Page content must sit above the ice sheet. */
@@ -235,7 +227,7 @@
   /* Frosted pane — kept genuinely transparent so the ice reads THROUGH it; the
      lit top edge + rim is what sells it as glass rather than white. */
   .glass {
-    background: linear-gradient(150deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.26) 50%, rgba(226,240,240,0.34) 100%);
+    background: #f5f2ea;
     backdrop-filter: blur(22px) saturate(180%);
     -webkit-backdrop-filter: blur(22px) saturate(180%);
     border: 1px solid rgba(255,255,255,0.55);
@@ -247,7 +239,7 @@
 
   /* Thinner pane for cards sitting on top of a .glass panel. */
   .glass-card {
-    background: linear-gradient(150deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.3) 55%, rgba(228,240,240,0.36) 100%);
+    background: #fbf8f1;
     backdrop-filter: blur(14px) saturate(160%);
     -webkit-backdrop-filter: blur(14px) saturate(160%);
     border: 1px solid rgba(255,255,255,0.55);
